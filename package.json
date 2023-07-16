@@ -1,0 +1,31 @@
+{
+  "name": "sevdesk-donation-certificate",
+  "version": "1.0.0",
+  "description": "A tool to automatically create Donation-Certificates depending on the data from SevDesk",
+  "main": "index.js",
+  "scripts": {
+    "test": "run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScheerleJo/SevDeskDonations.git"
+  },
+  "keywords": [
+    "SevDesk",
+    "Donation",
+    "Certificate"
+  ],
+  "author": "ScheerleJo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ScheerleJo/SevDeskDonations/issues"
+  },
+  "homepage": "https://github.com/ScheerleJo/SevDeskDonations#readme",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "node-fetch": "^2.6.12",
+    "num-words-de": "^1.0.5"
+  }
+}
