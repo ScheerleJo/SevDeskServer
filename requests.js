@@ -1,62 +1,31 @@
-type=module;
-const fetch = require('node-fetch');
-const fs = require('fs')
+DocumentType = module;
+
+const { configDotenv, config } = require('dotenv');
+const axios = require('axios');
+// const fs = require('fs');
 require('dotenv').config();
 
-var express;
 
-// function getExpressApp(app) {
-//     express = app;
-// }
 module.exports = {
     getDonations,
     getContacts
 }
-async function makeSevDeskRequest(method , querystring = undefined) {
+async function makeSevDeskRequest(method = String , querystring = String) {
     baseUrl = 'https://my.sevdesk.de/api/v1/'
     let req = baseUrl + querystring
-
-    console.log(req);
-
-    let resData
-
-    fetch(req, {
-        method: method,
-        headers: {
-            'Authorization': process.env.API_TOKEN
-        }
-    }).then(response => {
-        if (response.ok) {
-            response.json().then((data) => {
-                resData = data;
-            });  
-        } else {
-            throw 'There is something wrong';
-        }
-        }).catch(error => {
-            console.log(error);
-        });
+    let config =  { headers:{'Authorization': process.env.API_TOKEN } }
     
-    return resData;
+    let response = await axios.get(req, config)
+    let resData = response.data
+    // console.log(resData)
+    return resData
 }
 
-//TUT NOCH NET
+
 async function getDonations(year){
-    let data = [];
-    let date = new Date()
-    for(let month = 1; month <= date.getMonth(); month++) {
-        res = await makeSevDeskRequest('GET', `Voucher?year=${year}&month=${month}&creditDebit=D`)
-        
-        for(let item = 0; item < res.length; item++) {
-            data.push(res.object[item])
-        }
-
-    }
-
-    //`Voucher?year=${year}&month=${month}&descriptionLike=Spende`
+    let request = "Voucher?embed=accountingTypes%2CaccountingTypes.accountingSystemNumber%2Csupplier%2Csupplier.category%2Cobject%2Cdebit%2Cdelinquent&countAll=true&limit=none&voucherType=VOU&emptyState=true&accountingType[id]=679076&accountingType[objectName]=AccountingType&year=" + year
+    let data = await makeSevDeskRequest('GET', request)
     return data
-    
-    // https://my.sevdesk.de/api/v1/Voucher?year=2023&month=01&descriptionLike=Spende
 }
 
 async function getContacts(){
@@ -69,21 +38,13 @@ async function getContactByID(id){
 
 async function getAdressByContactID (id) {
     let data = await makeSevDeskRequest('GET', `ContactAddress?contact[id]=${id}&contact[objectName]=Contact`) 
-
     // https://my.sevdesk.de/api/v1/ContactAddress?contact[id]=37668965&contact[objectName]=Contact
 }
-function listDonationsPerUserID(id) {
-    data = getDonations()
+async function listDonationsPerUserID(year) {
+    data = await getDonations(year)
 
-    let userDonation = {}
-    
-    
+    //sort alphabetical by objects.supplier.familyname 
 }
-
-
-// console.log(getDonations(2023))
-
-console.log(getContacts())
+// getDonations(2023)
 
 // getContactByID(37668965)
-

@@ -5,14 +5,14 @@ const PORT = 8040;
 var requests = require('./requests');
 
 
-// console.log(requests.token)
-// requests.getDonations();
 
-// app.get()
+app.get('/', (req, res) => {
+    requests.getDonations(2023)
+})
 
 
 
-// app.listen(PORT, function(){        
-//     console.log(` Server running on Port ${PORT}`);
-// });
+app.listen(PORT, function(){        
+    console.log(` Server running on Port ${PORT}`);
+});
 
