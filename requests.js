@@ -2,7 +2,7 @@ DocumentType = module;
 
 const { configDotenv, config } = require('dotenv');
 const axios = require('axios');
-// const fs = require('fs');
+const fs = require('fs');
 require('dotenv').config();
 
 
@@ -41,10 +41,26 @@ async function getAdressByContactID (id) {
     // https://my.sevdesk.de/api/v1/ContactAddress?contact[id]=37668965&contact[objectName]=Contact
 }
 async function listDonationsPerUserID(year) {
-    data = await getDonations(year)
+    //ToDo: Currently running from json file
+    // let data = await getDonations(year)
+    let data = await getJsonData();
 
-    //sort alphabetical by objects.supplier.familyname 
+
+
+    //sort alphabetical by objects.supplier.familyname
 }
 // getDonations(2023)
 
 // getContactByID(37668965)
+
+
+
+async function getJsonData() {
+    await fs.readFile('./samples/re_copy.json', (err, data) => {
+        if(err) {
+            console.error(error);
+        } else {
+            return data
+        }
+    })
+}
