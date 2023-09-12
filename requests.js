@@ -5,27 +5,41 @@ const axios = require('axios');
 const fs = require('fs');
 require('dotenv').config();
 
+let responseData = 'Hello, i am Data'
 
 module.exports = {
     getDonations,
-    getContacts
+    getContacts,
+    getJsonData,
+    getData
 }
+
+
 async function makeSevDeskRequest(method = String , querystring = String) {
-    baseUrl = 'https://my.sevdesk.de/api/v1/'
-    let req = baseUrl + querystring
+    baseUrl = 'https://my.sevdesk.de/api/v1/';
+    let req = baseUrl + querystring;
     let config =  { headers:{'Authorization': process.env.API_TOKEN } }
-    
-    let response = await axios.get(req, config)
-    let resData = response.data
+
+    let response = await axios.get(req, config);
+
+    try {
+        data = response.data
+    } catch (error) {
+        console.log(error)
+        await setTimeout(() => {return;}, 500);
+        console.log('sleep')
+    }
+    let resData = await response.data
     // console.log(resData)
-    return resData
+    return await resData
 }
 
 
-async function getDonations(year){
+async function getDonations(year, _callback){
     let request = "Voucher?embed=accountingTypes%2CaccountingTypes.accountingSystemNumber%2Csupplier%2Csupplier.category%2Cobject%2Cdebit%2Cdelinquent&countAll=true&limit=none&voucherType=VOU&emptyState=true&accountingType[id]=679076&accountingType[objectName]=AccountingType&year=" + year
-    let data = await makeSevDeskRequest('GET', request)
-    return data
+    responseData = await makeSevDeskRequest('GET', request);
+    // responseData = await data;
+    _callback();
 }
 
 async function getContacts(){
@@ -37,30 +51,7 @@ async function getContactByID(id){
 }
 
 async function getAdressByContactID (id) {
-    let data = await makeSevDeskRequest('GET', `ContactAddress?contact[id]=${id}&contact[objectName]=Contact`) 
+    let data = await makeSevDeskRequest('GET', `ContactAddress?contact[id]=${id}&contact[objectName]=Contact`)
+
     // https://my.sevdesk.de/api/v1/ContactAddress?contact[id]=37668965&contact[objectName]=Contact
-}
-async function listDonationsPerUserID(year) {
-    //ToDo: Currently running from json file
-    // let data = await getDonations(year)
-    let data = await getJsonData();
-
-
-
-    //sort alphabetical by objects.supplier.familyname
-}
-// getDonations(2023)
-
-// getContactByID(37668965)
-
-
-
-async function getJsonData() {
-    await fs.readFile('./samples/re_copy.json', (err, data) => {
-        if(err) {
-            console.error(error);
-        } else {
-            return data
-        }
-    })
 }
