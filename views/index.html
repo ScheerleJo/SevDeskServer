@@ -5,37 +5,39 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="stylesheet.css">
+    <script src="frontend_helper.js"></script>
     <title>SevDesk - Spendenbescheinigungen</title>
 </head>
 <body>
 
-    <h1>Übersicht</h1> 
-    <p>Hier sehen Sie eine Übersicht über die aktuellen Jobs der Spendenbescheinigungs-Automatisierung.</p>
-    <ul>
-        <li>"Offen" sind dabei alle angelegten Spender aus SevDesk, die von dort importiert wurden, aber deren Bescheinigung noch nicht angestoßen wurde.</li>
-        <li>"Prüfen" sind alle Spender, deren Bescheinigungen automatisch erstellt wurden. Diese müssen vor dem Absenden zunächst auf ihre Richtigkeit geprüft werden.</li>
-        <li>"Abgeschlossen" sind alle Spender, deren Bescheinigungen bereits geprüft und abgeschickt sind.</li>
-    </ul>
-    <div>
-        <table id="overview-table">
-            <thead>
+    <div class="container" id="overview">
+        <h1>Übersicht</h1> 
+        <p>Hier sehen Sie eine Übersicht über die aktuellen Jobs der Spendenbescheinigungs-Automatisierung.</p>
+        <ul>
+            <li>"Offen" sind dabei alle angelegten Spender aus SevDesk, die von dort importiert wurden, aber deren Bescheinigung noch nicht angestoßen wurde.</li>
+            <li>"Prüfen" sind alle Spender, deren Bescheinigungen automatisch erstellt wurden. Diese müssen vor dem Absenden zunächst auf ihre Richtigkeit geprüft werden.</li>
+            <li>"Abgeschlossen" sind alle Spender, deren Bescheinigungen bereits geprüft und abgeschickt sind.</li>
+        </ul>
+        <div>
+            <table id="overview-table">
+                <thead>
+                    <tr>
+                        <th id="open-jobs"><center>Offen</center></th>
+                        <th id="check-jobs"><center>Prüfen</center></th>
+                        <th id="successful-jobs"><center>Abgeschlossen</center></th>
+                    </tr>    
+                </thead>
                 <tr>
-                    <th id="open-jobs"><center>Offen</center></th>
-                    <th id="check-jobs"><center>Prüfen</center></th>
-                    <th id="successful-jobs"><center>Abgeschlossen</center></th>
-                </tr>    
-            </thead>
-            <tr>
-                <td class="job-nr" id="open-jobs-nr"><center><a href="#">0</a></center></td>
-                <td class="job-nr" id="check-jobs-nr"><center><a href="#">0</a></center></td>
-                <td class="job-nr" id="successful-jobs-nr"><center><a href="#">0</a></center></td>
-            </tr>
-        </table>
+                    <td class="job-nr" id="open-jobs-nr"><center><a href="#" onclick="showTable('open-jobs')">0</a></center></td>
+                    <td class="job-nr" id="check-jobs-nr"><center><a href="#" onclick="showTable('check-jobs')">0</a></center></td>
+                    <td class="job-nr" id="successful-jobs-nr"><center><a href="#" onclick="showTable('successful-jobs')">0</a></center></td>
+                </tr>
+            </table>
+        </div>
     </div>
+    <div class="container" id="autocreate">
 
-
-
-
+    </div>
 
 
 
