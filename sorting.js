@@ -10,11 +10,12 @@ module.exports = {
 
 function setData(APIData) {
     originalData, data = APIData;
-    // data = APIData;
 }
-
+/**
+ * sort all Donatins from 'setData' by objects.supplier.customernumber & date from oldest to newest
+ * @returns {Array} Sorted donations
+ */
 function listDonationsPerUserID() {
-    // sort by objects.supplier.customernumber & date from oldest to newest
 
     countError = [];
     data = data.objects
@@ -67,25 +68,3 @@ function getSmallestCustomerNumber() {
     return {smallestNum, index}
 }
 
-//!Deprecated and no longer in use
-function getOldestDonationByCN(cn){
-
-    let index = 0;
-    let i = data.length - 1;
-    do{
-        let currentCN = 0
-        try {
-            currentCN = data[i].supplier.customerNumber;
-        } catch (error) {
-            console.log("Error at item of 'data': " + i + '\n' + error)
-            i--
-            continue;
-        }
-        if (currentCN == cn) {
-            index = i;
-            break;
-        }
-        i--
-        } while (i > 0);
-    return index;
-}

@@ -4,11 +4,39 @@
 
 ## Simple structure
 
-- [x] get info from SevDesk
-- [x] sort all information from SevDesk Data (get relevant Data from Donors)
-- [ ] create simplified array for data
-- [ ] create GUI to view all Data sorted by customernumber
-- [ ] code the possibility to set tags in Sevdesk and pull these to check wehter a Donation-Certificate has been created
-- [ ] code the possibility to change false Data in the GUI and push to sevDesk
-- [ ] manipulate Word/latex files to the Data points in the table
-- [ ] manage Word/Latex files (Save to local Machine/send via mail/send via letter at sevdesk or other)
+- Back-End
+  - [x] get info from SevDesk
+  - [x] sort all information from SevDesk Data (get relevant Data from Donors)
+  - [x] NOT (create simplified array for data)
+  - [ ] Backend Cleanup
+  <!-- - [ ] code the possibility to change wrong Data in the GUI and push to sevDesk -->
+    <!-- - List all Data of specific user to be changend/corrected and then saved -->
+  - [ ] manipulate Word/latex files to the Data points in the table
+  - [ ] code the possibility to set tags in Sevdesk and pull these to check whether a Donation-Certificate has been created
+  - [ ] create Word/LaTeX files
+  - [ ] manage Word/LaTeX files as PDF(Save to local Machine/send via mail/send via letter at sevdesk or other)
+
+- Front-End/GUI
+  - [ ] View all Data sorted by customernumber
+  - [ ] Determine wether application is Standanlone and saves changed data and status to SevDesk before closing or as a Server with Access-Tool (first Web, then Win Form)
+  - [ ] create Styling
+  - [ ] Gathering Data:
+    - Enter Authorization-Key
+    - Save Auth-Key in .env File
+    - Button for Requesting Data with selectable Year
+  - [ ] Automatically create a Table for all Sorted-Data-Points
+
+- Extras
+  - [ ] create LaTeX-Template
+
+- Tag für successful erstellte Donation Certificates
+
+
+
+
+
+
+- abhaken, wenn geprüft
+- mehrere gleichzeitig abhaken
+- Button zum pdf erstellen
+(- Frage ob alles passt, wenn ja wird Tag geschrieben (bei Contact als auch allen Voucher))

@@ -49,6 +49,7 @@ function showTable(status) {
     }
     table.appendChild(tbody);
     container.appendChild(table);
+    alert('hi');
 }
 
 
@@ -61,72 +62,8 @@ function setData(data) {
     // TableData = data;
     let data = {
         "objects": [
-            {
-                "id": "70322217",
-                "voucherDate": "2023-09-19T00:00:00+02:00",
-                "customerNumber": "2951",
-                "surename": "Jürgen",
-                "familyname": "Stamm",
-                "titel": null,
-                "category": {
-                    "id": "4",
-                    "create": "2012-01-04T19:40:32+01:00",
-                    "name": "Partner",
-                    "code": "P",
-                    "type": "C",
-                    "translationCode": "CATEGORY_PARTNER"
-                },
-                "name2": null,
-                "status": "1000",
-                "currency": "EUR",
-                "sumNet": "25"
-            },
-            {
-                "id": "70322140",
-                "voucherDate": "2023-09-19T00:00:00+02:00",
-                "customerNumber": "2950",
-                "surename": "Anton",
-                "familyname": "Mohler",
-                "titel": null,
-                "category": {
-                    "id": "4",
-                    "objectName": "Category",
-                    "create": "2012-01-04T19:40:32+01:00",
-                    "name": "Partner",
-                    "code": "P",
-                    "type": "C",
-                    "translationCode": "CATEGORY_PARTNER"
-                },
-                "name2": null,
-                "status": "1000",
-                "currency": "EUR",
-                "sumNet": "250"
-            },
-            {
-                "id": "70125168",
-                "voucherDate": "2023-09-18T00:00:00+02:00",
-                "customerNumber": "2706",
-                "surename": "Ingrid & Arno",
-                "familyname": "Zeitler",
-                "titel": null,
-                "category": {
-                    "id": "3",
-                    "objectName": "Category",
-                    "create": "2012-01-04T19:40:28+01:00",
-                    "name": "Kunde",
-                    "code": "K",
-                    "type": "C",
-                    "translationCode": "CATEGORY_CUSTOMER"
-                },
-                "name2": null,
-                "status": "1000",
-                "currency": "EUR",
-                "sumNet": "100"
-            }
+           
         ]
     };
     tableData = data.objects;
 }
-
-setData();
-setTableWidth();
