@@ -9,6 +9,7 @@
   - [x] sort all information from SevDesk Data (get relevant Data from Donors)
   - [x] NOT (create simplified array for data)
   - [ ] Backend Cleanup
+  - [ ] Format Array to push useful information to GUI only
   <!-- - [ ] code the possibility to change wrong Data in the GUI and push to sevDesk -->
     <!-- - List all Data of specific user to be changend/corrected and then saved -->
   - [ ] manipulate Word/latex files to the Data points in the table
@@ -18,13 +19,15 @@
 
 - Front-End/GUI
   - [ ] View all Data sorted by customernumber
-  - [ ] Determine wether application is Standanlone and saves changed data and status to SevDesk before closing or as a Server with Access-Tool (first Web, then Win Form)
+  - [ ] Determine wether application is Standanlone and saves changed data and status to SevDesk before closing or as a Server with Access-Tool (Tauri Win Form)
   - [ ] create Styling
+    - Finish Colorscheme for light/darkmode
+    - finish titlebar
   - [ ] Gathering Data:
     - Enter Authorization-Key
     - Save Auth-Key in .env File
     - Button for Requesting Data with selectable Year
-  - [ ] Automatically create a Table for all Sorted-Data-Points
+  - [x] Automatically create a Table for all Sorted-Data-Points
 
 - Extras
   - [ ] create LaTeX-Template
