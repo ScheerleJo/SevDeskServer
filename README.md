@@ -16,6 +16,7 @@
   - [ ] create LaTeX files
   - [ ] manage LaTeX files as PDF(Save to local Machine/send via mail/send via letter at sevdesk or other)
   - [ ] Save Data parsed from Frontend
+  - [ ] When not yet successfully done: save JSON-Doc locally. On Startup look for JSON-File. If existent, load data from there automatically in the table
 
 - Front-End/GUI
   - [ ] View all Data sorted by customernumber
@@ -24,6 +25,7 @@
     - Finish Colorscheme for light/darkmode
     - finish titlebar
   - [ ] Gathering Data:
+    - Change Donation-Table to one column more with sum as writtenWord
     - Enter Authorization-Key
     - Button for Requesting Data with selectable Year
   - [ ] Automatically create a Table for all Sorted-Data-Points
