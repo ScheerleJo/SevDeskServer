@@ -11,7 +11,8 @@ module.exports = {
     getDonations,
     getContacts,
     getJsonData,
-    getData
+    getAdressByContactID,
+    responseData
 }
 
 
@@ -50,8 +51,9 @@ async function getContactByID(id){
     return await makeSevDeskRequest('GET', 'Contact/' + id)
 }
 
-async function getAdressByContactID (id) {
-    return await makeSevDeskRequest('GET', `ContactAddress?contact[id]=${id}&contact[objectName]=Contact`)
+async function getAdressByContactID (id, _callback) {
+    responseData = await makeSevDeskRequest('GET', `ContactAddress?contact[id]=${id}&contact[objectName]=Contact`)
 
+    _callback();
     // https://my.sevdesk.de/api/v1/ContactAddress?contact[id]=37668965&contact[objectName]=Contact
 }
