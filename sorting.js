@@ -1,6 +1,5 @@
 DocumentType = module;
-var data = '';
-let originalData = '';
+let data, originalData = '';
 let countError = new Array();
 
 module.exports = {
@@ -12,8 +11,8 @@ function setData(APIData) {
     originalData, data = APIData;
 }
 /**
- * sort all Donatins from 'setData' by objects.supplier.customernumber & date from oldest to newest
- * @returns {Array} Sorted donations
+ * sort all Donations from 'setData' by objects.supplier.customernumber & date from oldest to newest
+ * @returns {Array<String>} Sorted donations
  */
 function listDonationsPerUserID() {
 
@@ -25,8 +24,7 @@ function listDonationsPerUserID() {
     let index = smallestCustomerNumber['index'];
 
     for (let i = index; len != 0 ;) {
-        let currentObject = data[i];
-        sorted.push(currentObject);
+        sorted.push(data[i]);
         len = deleteCurrentItem(i);
         smallestCustomerNumber = getSmallestCustomerNumber();
         i = smallestCustomerNumber["index"];
@@ -35,15 +33,17 @@ function listDonationsPerUserID() {
 }
 
 function deleteCurrentItem(index) {
-    data.splice(index, 1)
-    return data.length
+    data.splice(index, 1);
+    return data.length;
 }
 
-//walk thru all donation objects to get smallest customerNumber
+/**
+ * walk thru all donation objects to get smallest customerNumber
+ * @returns smallest CustomerNumber and the first listed Index of that Number
+ */
 function getSmallestCustomerNumber() {
-    let smallestNum = null
-    let len = data.length
-    let currentNum = null;
+    let smallestNum, currentNum = null;
+    let len = data.length;
     let index = null;
     for (let i = 0; i < len; i ++) {
         try {
@@ -52,19 +52,18 @@ function getSmallestCustomerNumber() {
             if (countError.includes(data[i].id) == false) {
                 countError.push(data[i].id);
                 console.log("Error at item of 'data': " + i + '\n' + error)
-            }
-
-            if(countError.length >= len) {
+            } if(countError.length >= len) {
                 return {smallestNum: undefined, index: len - 1};
             }
-            
             continue;
         }
         if (smallestNum == null || smallestNum > currentNum) {
             smallestNum = currentNum;
-            index = i
+            index = i;
         } 
     }
-    return {smallestNum, index}
+    return {smallestNum, index};
 }
+
+
 

@@ -47,11 +47,11 @@ async function getContacts(){
 }
 
 async function getContactByID(id){
-    let data = await makeSevDeskRequest('GET', 'Contact/' + id)
+    return await makeSevDeskRequest('GET', 'Contact/' + id)
 }
 
 async function getAdressByContactID (id) {
-    let data = await makeSevDeskRequest('GET', `ContactAddress?contact[id]=${id}&contact[objectName]=Contact`)
+    return await makeSevDeskRequest('GET', `ContactAddress?contact[id]=${id}&contact[objectName]=Contact`)
 
     // https://my.sevdesk.de/api/v1/ContactAddress?contact[id]=37668965&contact[objectName]=Contact
 }
