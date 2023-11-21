@@ -5,10 +5,10 @@
 ## Simple structure
 
 - Back-End
-  - [x] get info from SevDesk
+  - [ ] get info from SevDesk
   - [x] sort all information from SevDesk Data (get relevant Data from Donors)
   - [x] Backend Cleanup
-  - [ ] Format Array to push useful information to GUI only
+  - [ ] Format Array to push only useful information to GUI
   <!-- - [ ] code the possibility to change wrong Data in the GUI and push to sevDesk -->
     <!-- - List all Data of specific user to be changend/corrected and then saved -->
   - [ ] manipulate latex files to the Data points in the table
@@ -30,13 +30,14 @@
     - Button for Requesting Data with selectable Year
   - [ ] Automatically create a Table for all Sorted-Data-Points
     - Alert: first save then overwrite existing Table
-
+    - only show Status speficic listings
+    - create ErrorListing for Entries without a customernumber with ID, supplierAtSave, date;
 - Extras
   - [ ] create LaTeX-Template
 
 - Tag für successful erstellte Donation Certificates
 
 - abhaken, wenn geprüft
-- mehrere gleichzeitig abhaken
+- mehrere gleichzeitig abhaken      [FutureMusic](ttps://stackoverflow.com/questions/659508/how-can-i-shift-select-multiple-checkboxes-like-gmail)
 - Button zum pdf erstellen
 (- Frage ob alles passt, wenn ja wird Tag geschrieben (bei Contact als auch allen Voucher))

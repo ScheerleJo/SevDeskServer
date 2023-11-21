@@ -51,7 +51,7 @@ function getSmallestCustomerNumber() {
         } catch (error) {
             if (countError.includes(data[i].id) == false) {
                 countError.push(data[i].id);
-                console.log("Error at item of 'data': " + i + '\n' + error)
+                console.log("Error at item " + i + "of 'data':\n" + error)
             } if(countError.length >= len) {
                 return {smallestNum: undefined, index: len - 1};
             }

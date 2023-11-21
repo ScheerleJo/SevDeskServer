@@ -4,7 +4,8 @@
   "description": "A tool to automatically create Donation-Certificates depending on the data from SevDesk",
   "main": "index.js",
   "scripts": {
-    "test": "run dev"
+    "test": "run dev",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
-    "num-words-de": "^1.0.5"
+    "num-words-de": "^1.0.5",
+    "url-parse": "^1.5.10"
   }
 }

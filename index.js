@@ -6,14 +6,23 @@ const out = require('./output');
 
 
 app.get('/', (req, res) => {
-    requests.getDonations(2023, function() {
-        // console.log('DATA GATHERING COMPLETE')
-        out.setSortedData(requests.getData());
-        console.log(sort.listDonationsPerUserID());
 
+});
+
+app.get('/getDonations', (req, res) => {
+    let year = requests.getYearFromQuery(req.url);
+    requests.getDonations(2023, () => {
+        // console.log('DATA GATHERING COMPLETE')
+
+        let response = out.setSortedData(requests.responseData);
+        // console.log(response);
+        res.json(response);
     })
-})
+});
+app.get('/saveData', (req, res) => {
+
+});
 
 app.listen(PORT, function(){        
-    console.log(` Server running on Port ${PORT}`);
+    console.log(`Server running on Port ${PORT}`);
 });
