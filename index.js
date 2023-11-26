@@ -6,16 +6,18 @@ const out = require('./output');
 
 
 app.get('/', (req, res) => {
-
+    console.log("successful request");
+    // res.text("Successful");
+    res.send("Successful")
 });
 
 app.get('/getDonations', (req, res) => {
     let year = requests.getYearFromQuery(req.url);
     requests.getDonations(2023, () => {
         // console.log('DATA GATHERING COMPLETE')
-
-        let response = out.setSortedData(requests.responseData);
-        // console.log(response);
+        out.setSortedData(requests.getData());
+        let response = out.formatData();
+        console.log(response);
         res.json(response);
     })
 });
