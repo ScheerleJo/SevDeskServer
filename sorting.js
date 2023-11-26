@@ -8,7 +8,8 @@ module.exports = {
 }
 
 function setData(APIData) {
-    originalData, data = APIData;
+    originalData = APIData;
+    data = APIData;
 }
 /**
  * sort all Donations from 'setData' by objects.supplier.customernumber & date from oldest to newest
@@ -51,7 +52,7 @@ function getSmallestCustomerNumber() {
         } catch (error) {
             if (countError.includes(data[i].id) == false) {
                 countError.push(data[i].id);
-                console.log("Error at item " + i + "of 'data':\n" + error)
+                console.log("Warning at item " + i + " of 'data':\n" + error)
             } if(countError.length >= len) {
                 return {smallestNum: undefined, index: len - 1};
             }
