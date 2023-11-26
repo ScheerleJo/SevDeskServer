@@ -13,24 +13,29 @@ module.exports = {
     getDonations,
     getAdressByContactID,
     getYearFromQuery,
-    responseData,
+    getData,
     adressData
 }
 
 
-async function makeSevDeskRequest(querystring = String) {
+async function makeSevDeskRequest(type, querystring) {
     baseUrl = 'https://my.sevdesk.de/api/v1/';
     let req = baseUrl + querystring;
     let config =  { headers:{'Authorization': process.env.API_TOKEN } }
-
-    let response = await axios.get(req, config);
-
-    try {
-        data = response.data
-    } catch (error) {
-        console.log(error)
-        await setTimeout(() => {return;}, 500);
-        console.log('sleep')
+    let response;
+    if(type == 'GET'){
+        response = await axios.get(req, config).catch((error) => {
+            console.log(error);
+        })
+    
+        try {
+            data = response.data
+        } catch (error) {
+            console.log(error)
+            await setTimeout(() => {return;}, 500);
+            console.log('sleep')
+        }
+        
     }
     let resData = await response.data
     // console.log(resData)
@@ -61,4 +66,10 @@ async function getAdressByContactID (id, _callback) {
 
 function getYearFromQuery(url) {
     return parseUrl(url).query.year;
+}
+function getData(){
+    return responseData;
+}
+function getAdressData(){
+    return adressData;
 }
