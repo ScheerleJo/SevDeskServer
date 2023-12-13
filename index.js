@@ -15,11 +15,20 @@ app.get('/getDonations', (req, res) => {
     let year = requests.getYearFromQuery(req.url);
     requests.getDonations(2023, () => {
         console.log('DATA GATHERING COMPLETE')
-        sort.setData(requests.getData());
-        let response = sort.listDonationsPerUserID();
-        console.log(response);
-        res.send(response);
+        sort.setDonationData(requests.getData());
+        requests.getAllAdresses(() => {
+            console.log('DATA GATHERING COMPLETE')
+            console.log(requests.getData());
+            
+            let response = sort.listDonationsPerUserID();
+            console.log(response);
+            
+            res.send(response);
+        })
+        
     })
+
+    
 });
 app.get('/saveData', (req, res) => {
 

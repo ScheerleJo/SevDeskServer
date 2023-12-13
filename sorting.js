@@ -3,16 +3,21 @@ DocumentType = module;
 const request = require('./requests');
 
 let data, originalData = '';
+let addresses = '';
 let countError = new Array();
 
 module.exports = {
-    setData,
+    setDonationData,
+    setAddressData,
     listDonationsPerUserID
 }
 
-function setData(APIData) {
+function setDonationData(APIData) {
     originalData = APIData;
     data = APIData;
+}
+function setAddressData(APIData) {
+    addresses = APIData.objects
 }
 /**
  * sort all Donations from 'setData' by objects.supplier.customernumber & date from oldest to newest
@@ -22,16 +27,36 @@ function listDonationsPerUserID() {
 
     countError = [];
     data = data.objects
+    let sorted = []
+    var len = data.length
+    let smallestCustomerNumber = getSmallestCustomerNumber()
+    let index = smallestCustomerNumber['index'];
+
+    for (let i = index; len != 0 ;) {
+        sorted.push(data[i]);
+        len = deleteCurrentItem(i);
+        smallestCustomerNumber = getSmallestCustomerNumber();
+        i = smallestCustomerNumber["index"];
+    }
+    return sorted;
+}
+
+/*
+async function listDonationsPerUserID() {
+
+    countError = [];
+    data = data.objects
     let sorted = [], formattedData = [];
     var len = data.length
     let smallestCustomerNumber = getSmallestCustomerNumber()
     let index = smallestCustomerNumber['index'];
-    let lastcustomerNumber = undefined;
-    let TotalSum = 0;
+    let lastcustomerNumber = 0;
+    let totalSum = 0;
     let firstIteration = true;
     for (let i = index; len != 0 ;) {
+        const element = data[i];
         if (smallestCustomerNumber['smallestNum'] === undefined){
-            let name = data[i].supplierName.split(" ");
+            let name = element.supplierName.split(" ");
             let surename = "";
             for (let j = 0; j < (name.length - 1); j++) { surename += ( " " + name[i]); }
             sorted.push({"customerNumber": "Error, keine Kdnr registriert",
@@ -40,16 +65,17 @@ function listDonationsPerUserID() {
             "FamilyName": name[-1],
             "Street": "",
             "CityPostalCode": "",
-            "TotalSum": data[i].sumNet,
+            "TotalSum": element.sumNet,
             "Donations": {}
         })
         }
-        if (smallestCustomerNumber['smallestNum'] != lastcustomerNumber){
+        if (parseInt(smallestCustomerNumber['smallestNum']) != lastcustomerNumber){
             console.log('Push latest Donator and create New with Donation');
             if(!firstIteration) {
                 if (sorted == []){
                     sorted = formattedData;
                 } else {
+                    formattedData.TotalSum = totalSum;
                     sorted.push(formattedData);
                 }
             }
@@ -57,24 +83,25 @@ function listDonationsPerUserID() {
             // formattedData = [];
             totalSum = 0;
 
-            request.getAdressByContactID(data[i].supplier.id, () => {
+            request.getAdressByContactID(element.supplier.id, await function () {
                 
                 let adress = request.getAdressData().objects;
                 let formattedData = {
-                    "CustomerNumber": data[i].supplier.customerNumber,
-                    "AcademicTitle": data[i].supplier.academicTitle,
-                    "Surename": data[i].supplier.surename,
-                    "FamilyName": data[i].supplier.familyname,
+                    "CustomerNumber": element.supplier.customerNumber,
+                    "AcademicTitle": element.supplier.academicTitle,
+                    "Surename": element.supplier.surename,
+                    "FamilyName": element.supplier.familyname,
                     "Street": adress.street,
                     "CityPostalCode": `${adress.zip} ${adress.city}`,
-                    "TotalSum": curTotalSum += data[i].sumNet,
+                    "TotalSum": element.sumNet,
                     "Donations":[]
                 }
             });
             lastCustomerNumber = smallestCustomerNumber['smallestNum'];
         } else {
             console.log('Only Donation Stuff');
-            formattedData.Donations.push(getDonationData(data[i]));
+            formattedData.Donations.push(getDonationData(element));
+            totalSum += element.sumNet;
         }
         len = deleteCurrentItem(i);
         smallestCustomerNumber = getSmallestCustomerNumber();
@@ -82,6 +109,7 @@ function listDonationsPerUserID() {
     }
     return sorted;
 }
+*/
 
 function deleteCurrentItem(index) {
     data.splice(index, 1);
@@ -118,18 +146,18 @@ function getSmallestCustomerNumber() {
 
 
 
-function formatData(currentDataPack, sortedData){
-    let formattedData = [];
+// function formatData(currentDataPack, sortedData){
+//     let formattedData = [];
 
-    if(sortedData.includes(currentDataPack.supplier.customerNumber)){
-        console.log("only push Donation array to donator")
-    } else {
-        console.log("Push donator Array to return. Clear Donator array and push Donator Info")
-    }
+//     if(sortedData.includes(currentDataPack.supplier.customerNumber)){
+//         console.log("only push Donation array to donator")
+//     } else {
+//         console.log("Push donator Array to return. Clear Donator array and push Donator Info")
+//     }
 
 
-    return formattedData;
-}
+//     return formattedData;
+// }
 
 
 
