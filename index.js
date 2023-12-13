@@ -2,7 +2,7 @@ const express = require('express');
 var app = express();
 const PORT = 8040;
 const requests = require('./requests');
-const out = require('./output');
+const sort = require('./sorting');
 
 
 app.get('/', (req, res) => {
@@ -14,11 +14,11 @@ app.get('/', (req, res) => {
 app.get('/getDonations', (req, res) => {
     let year = requests.getYearFromQuery(req.url);
     requests.getDonations(2023, () => {
-        // console.log('DATA GATHERING COMPLETE')
-        out.setSortedData(requests.getData());
-        let response = out.formatData();
+        console.log('DATA GATHERING COMPLETE')
+        sort.setData(requests.getData());
+        let response = sort.listDonationsPerUserID();
         console.log(response);
-        res.json(response);
+        res.send(response);
     })
 });
 app.get('/saveData', (req, res) => {

@@ -5,7 +5,7 @@
 ## Simple structure
 
 - Back-End
-  - [ ] get info from SevDesk
+  - [x] get info from SevDesk
   - [x] sort all information from SevDesk Data (get relevant Data from Donors)
   - [x] Backend Cleanup
   - [ ] Format Array to push only useful information to GUI
@@ -19,6 +19,7 @@
   - [ ] When not yet successfully done: save JSON-Doc locally. On Startup look for JSON-File. If existent, load data from there automatically in the table
 
 - Front-End/GUI
+  - [ ] open "Window" on the open Window with the background Greyed out
   - [ ] View all Data sorted by customernumber
   - [ ] Determine wether application is Standanlone and saves changed data and status to SevDesk before closing or as a Server with Access-Tool (Tauri Win Form)
   - [ ] create Styling
@@ -31,7 +32,7 @@
   - [ ] Automatically create a Table for all Sorted-Data-Points
     - Alert: first save then overwrite existing Table
     - only show Status speficic listings
-    - create ErrorListing for Entries without a customernumber with ID, supplierAtSave, date;
+    - create ErrorListing for Entries without a customernumber with ID, supplierAtSave, date; (Dont Create a DonationTable but DonatorTable)
 - Extras
   - [ ] create LaTeX-Template
 
