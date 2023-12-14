@@ -20,7 +20,7 @@ app.get('/getDonations', (req, res) => {
             console.log('DATA GATHERING (Addresses) COMPLETE')
             out.setAddressData(requests.getData());
             let response = out.newFormat();
-            console.log(response);
+            // console.log(response);
             
             res.send(response);
         })

@@ -31,11 +31,7 @@ function newFormat (){
     let donatorData = {};
     let lastCustomerNumber = 0;
 
-
-
-    console.log("Data.Length: " +len)
     for(let i = 0; i < len; i++) {
-        // console.log(`i: ${i}`)
         const element = sortedData[i];
         let customerNumber = undefined
         try {
@@ -48,7 +44,6 @@ function newFormat (){
                 thinnedData.push(donatorData);
             }
             //Set DonatorData to Error with some Information of the Voucher
-            // console.log("Error")
             donatorData = getDonatorErrorData(element)
         } else if (customerNumber != lastCustomerNumber){
             //check for new customerNumber to set a new Donator
@@ -60,11 +55,9 @@ function newFormat (){
             totalSum = 0;
 
             //Create new Donator Scheme
-            // console.log("Add new Donator")
             donatorData = getNextDonator(element);
         }
         //add Donation
-        // console.log("Added Donation")
         donatorData.Donations.push(getNextDonation(element))
     }
     return thinnedData;
@@ -155,112 +148,3 @@ function getAddressForContact(id) {
 
 
 
-
-
-
-/*
-function formatData (){
-    let formattedData = [];
-    let lastCustomerNumber = 0;
-    let donator = -1; // important to have at -1 to avoid the first element in the array to be empty. 
-    
-    for (let i = 0; i < sortedData.length; i++) {
-        const element = sortedData[i];
-        let customerNumber = sortedData[i].supplier.customerNumber || undefined;
-        if(customerNumber != lastCustomerNumber && customerNumber != undefined){
-            lastCustomerNumber = customerNumber;
-            donator++;
-            let adress;
-            request.getAdressByContactID(element.supplier.id, () => {
-                
-                adress = request.getAdressData().objects;
-                let nextDonator = [
-                    element.supplier.customerNumber,
-                    element.supplier.academicTitle,
-                    element.supplier.surename,
-                    element.supplier.familyname,
-                    adress.street,
-                    `${adress.zip} ${adress.city}`,
-                    formattedData[donator][6] += element.sumNet,
-                    []
-                ]
-
-                
-                formattedData.push(nextDonator)
-            });
-            
-        } else if (customerNumber == undefined) {
-            donator++;
-            let name = element.supplierName.split(" ");
-            let surname, familyname = "";
-            for (let j = 0; j < (name.length - 1); j++) {
-                surname += (name[i]);
-            } 
-            formattedData.push([
-                "Error, keine Kdnr registriert", "", surename, name[-1],"","", element.sumNet,[]
-            ]);
-        }
-        let donation = [
-            element.voucherDate,
-            element.description,
-            element.sumNet,
-            convertNumToWord(element.sumNet)
-        ]
-        formattedData[formatData.length -1][7].push(donation)              
-    }
-
-    return formattedData;
-}
-
-
-*/
-
-
-
-/**
- * Format the data sorted by this module to push to Frontend
- * Format = [[customernumber, title, firstName, lastName, streetNumber, postalCodeCity, donationSumAll, [['donationDate', 'type', 'description', 'donationSum', donationSumAsText], ...nextDonation], state],...nextUser]
- * @returns formattedData Array<String>
- */
-/*
-function formatData (){
-    let formattedData = [];
-    let lastCustomerNumber = 0;
-    let donator = -1; // important to have at -1 to avoid the first element in the array to be empty. 
-    
-    for (let i = 0; i < sortedData.length; i++) {
-        const element = sortedData[i];
-        let customerNumber = sortedData[i].supplier.customerNumber || undefined;
-        if(customerNumber != lastCustomerNumber && customerNumber != undefined){
-            lastCustomerNumber = customerNumber;
-            donator++;
-            let adress;
-            request.getAdressByContactID(element.supplier.id, () => {
-                
-                // adress = request.getAdressData().objects;
-                // 
-                // 
-                // ]
-
-                
-                formattedData.push(nextDonator)
-            });
-            
-        } else if (customerNumber == undefined) {
-            donator++;
-            
-            formattedData.push([
-                ]);
-        }
-        let donation = [
-            element.voucherDate,
-            element.description,
-            element.sumNet,
-            convertNumToWord(element.sumNet)
-        ]
-        formattedData[formatData.length -1][7].push(donation)              
-    }
-
-    return formattedData;
-}
-*/
