@@ -2,29 +2,24 @@ DocumentType = module;
 
 const request = require('./requests');
 
-let data, originalData = '';
-let addresses = '';
+let data //, originalData = '';
 let countError = new Array();
 
 module.exports = {
     setDonationData,
-    setAddressData,
     listDonationsPerUserID
 }
 
 function setDonationData(APIData) {
-    originalData = APIData;
+    // originalData = APIData;
     data = APIData;
 }
-function setAddressData(APIData) {
-    addresses = APIData.objects
-}
+
 /**
  * sort all Donations from 'setData' by objects.supplier.customernumber & date from oldest to newest
  * @returns {Array<String>} Sorted donations
  */
 function listDonationsPerUserID() {
-
     countError = [];
     data = data.objects
     let sorted = []
@@ -133,7 +128,7 @@ function getSmallestCustomerNumber() {
                 console.log("Warning at item " + i + " of 'data':\n" + error)
             } if(countError.length >= len) {
                 return {smallestNum: undefined, index: len - 1};
-            }
+            } 
             continue;
         }
         if (smallestNum == null || smallestNum > currentNum) {
@@ -143,45 +138,6 @@ function getSmallestCustomerNumber() {
     }
     return {smallestNum, index};
 }
-
-
-
-// function formatData(currentDataPack, sortedData){
-//     let formattedData = [];
-
-//     if(sortedData.includes(currentDataPack.supplier.customerNumber)){
-//         console.log("only push Donation array to donator")
-//     } else {
-//         console.log("Push donator Array to return. Clear Donator array and push Donator Info")
-//     }
-
-
-//     return formattedData;
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -211,7 +167,6 @@ function formattttttData (){
             
         } else if (customerNumber == undefined) {
             // donator++;
-       ;
         } 
         else {
             console.log("Donator already exists. Adding Donation only."); //! Only Temporary
@@ -223,13 +178,4 @@ function formattttttData (){
 function convertNumToWord(numInteger) {
     //Uppercase: Default True
     return num2words.numToWord(numInteger)
-}
-
-function getDonationData(element) {
-    return {
-        "Date": element.voucherDate,
-        "Type": element.description,
-        "Sum": element.sumNet,
-        "SumInWords": convertNumToWord(element.sumNet)
-    }
 }
