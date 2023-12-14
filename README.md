@@ -8,7 +8,7 @@
   - [x] get info from SevDesk
   - [x] sort all information from SevDesk Data (get relevant Data from Donors)
   - [x] Backend Cleanup
-  - [ ] Format Array to push only useful information to GUI
+  - [x] Format Array to push only useful information to GUI
   <!-- - [ ] code the possibility to change wrong Data in the GUI and push to sevDesk -->
     <!-- - List all Data of specific user to be changend/corrected and then saved -->
   - [ ] manipulate latex files to the Data points in the table
@@ -19,20 +19,20 @@
   - [ ] When not yet successfully done: save JSON-Doc locally. On Startup look for JSON-File. If existent, load data from there automatically in the table
 
 - Front-End/GUI
-  - [ ] open "Window" on the open Window with the background Greyed out
+  - [ ] open "Window"/MessageBox on the open Main-Window with the background Greyed out
   - [ ] View all Data sorted by customernumber
   - [ ] Determine wether application is Standanlone and saves changed data and status to SevDesk before closing or as a Server with Access-Tool (Tauri Win Form)
   - [ ] create Styling
-    - Finish Colorscheme for light/darkmode
-    - finish titlebar
+    - [ ] Finish Colorscheme for light/darkmode
+    - [ ] finish titlebar
   - [ ] Gathering Data:
-    - Change Donation-Table to one column more with sum as writtenWord
-    - Enter Authorization-Key
-    - Button for Requesting Data with selectable Year
+    - [ ] Change Donation-Table to one column more with sum as writtenWord
+    - [ ] Enter Authorization-Key
+    - [ ] Button for Requesting Data with selectable Year
   - [ ] Automatically create a Table for all Sorted-Data-Points
-    - Alert: first save then overwrite existing Table
-    - only show Status speficic listings
-    - create ErrorListing for Entries without a customernumber with ID, supplierAtSave, date; (Dont Create a DonationTable but DonatorTable)
+    - [ ] Alert: first save then overwrite existing Table
+    - [ ] only show Status speficic listings
+    - [ ] create ErrorListing for Entries without a customernumber with ID, supplierAtSave, date; (Create a DonationTable aswell)
 - Extras
   - [ ] create LaTeX-Template
 

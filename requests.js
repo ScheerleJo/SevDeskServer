@@ -14,7 +14,8 @@ module.exports = {
     getAdressByContactID,
     getYearFromQuery,
     getData,
-    adressData
+    adressData,
+    getAllAdresses
 }
 
 
@@ -45,6 +46,12 @@ async function makeSevDeskRequest(type, querystring) {
 
 async function getDonations(year, _callback){
     let request = "Voucher?embed=accountingTypes%2CaccountingTypes.accountingSystemNumber%2Csupplier%2Csupplier.category%2Cobject%2Cdebit%2Cdelinquent&countAll=true&limit=none&voucherType=VOU&emptyState=true&accountingType[id]=679076&accountingType[objectName]=AccountingType&year=" + year
+    responseData = await makeSevDeskRequest('GET', request);
+    _callback();
+}
+
+async function getAllAdresses(_callback) {
+    let request = "ContactAddress?limit=none&embed=contact%2Cstreet%2Czip%2Ccity%2Ccountry";
     responseData = await makeSevDeskRequest('GET', request);
     _callback();
 }

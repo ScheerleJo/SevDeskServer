@@ -2,86 +2,40 @@ DocumentType = module;
 
 const request = require('./requests');
 
-let data, originalData = '';
+let data //, originalData = '';
 let countError = new Array();
 
 module.exports = {
-    setData,
+    setDonationData,
     listDonationsPerUserID
 }
 
-function setData(APIData) {
-    originalData = APIData;
+function setDonationData(APIData) {
+    // originalData = APIData;
     data = APIData;
 }
+
 /**
  * sort all Donations from 'setData' by objects.supplier.customernumber & date from oldest to newest
  * @returns {Array<String>} Sorted donations
  */
 function listDonationsPerUserID() {
-
     countError = [];
     data = data.objects
-    let sorted = [], formattedData = [];
+    let sorted = []
     var len = data.length
     let smallestCustomerNumber = getSmallestCustomerNumber()
     let index = smallestCustomerNumber['index'];
-    let lastcustomerNumber = undefined;
-    let TotalSum = 0;
-    let firstIteration = true;
-    for (let i = index; len != 0 ;) {
-        if (smallestCustomerNumber['smallestNum'] === undefined){
-            let name = data[i].supplierName.split(" ");
-            let surename = "";
-            for (let j = 0; j < (name.length - 1); j++) { surename += ( " " + name[i]); }
-            sorted.push({"customerNumber": "Error, keine Kdnr registriert",
-            "AcademicTitle": "",
-            "Surename": surename,
-            "FamilyName": name[-1],
-            "Street": "",
-            "CityPostalCode": "",
-            "TotalSum": data[i].sumNet,
-            "Donations": {}
-        })
-        }
-        if (smallestCustomerNumber['smallestNum'] != lastcustomerNumber){
-            console.log('Push latest Donator and create New with Donation');
-            if(!firstIteration) {
-                if (sorted == []){
-                    sorted = formattedData;
-                } else {
-                    sorted.push(formattedData);
-                }
-            }
-            firstIteration = false;
-            // formattedData = [];
-            totalSum = 0;
 
-            request.getAdressByContactID(data[i].supplier.id, () => {
-                
-                let adress = request.getAdressData().objects;
-                let formattedData = {
-                    "CustomerNumber": data[i].supplier.customerNumber,
-                    "AcademicTitle": data[i].supplier.academicTitle,
-                    "Surename": data[i].supplier.surename,
-                    "FamilyName": data[i].supplier.familyname,
-                    "Street": adress.street,
-                    "CityPostalCode": `${adress.zip} ${adress.city}`,
-                    "TotalSum": curTotalSum += data[i].sumNet,
-                    "Donations":[]
-                }
-            });
-            lastCustomerNumber = smallestCustomerNumber['smallestNum'];
-        } else {
-            console.log('Only Donation Stuff');
-            formattedData.Donations.push(getDonationData(data[i]));
-        }
+    for (let i = index; len != 0 ;) {
+        sorted.push(data[i]);
         len = deleteCurrentItem(i);
         smallestCustomerNumber = getSmallestCustomerNumber();
         i = smallestCustomerNumber["index"];
     }
     return sorted;
 }
+
 
 function deleteCurrentItem(index) {
     data.splice(index, 1);
@@ -105,7 +59,7 @@ function getSmallestCustomerNumber() {
                 console.log("Warning at item " + i + " of 'data':\n" + error)
             } if(countError.length >= len) {
                 return {smallestNum: undefined, index: len - 1};
-            }
+            } 
             continue;
         }
         if (smallestNum == null || smallestNum > currentNum) {
@@ -115,45 +69,6 @@ function getSmallestCustomerNumber() {
     }
     return {smallestNum, index};
 }
-
-
-
-function formatData(currentDataPack, sortedData){
-    let formattedData = [];
-
-    if(sortedData.includes(currentDataPack.supplier.customerNumber)){
-        console.log("only push Donation array to donator")
-    } else {
-        console.log("Push donator Array to return. Clear Donator array and push Donator Info")
-    }
-
-
-    return formattedData;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -183,7 +98,6 @@ function formattttttData (){
             
         } else if (customerNumber == undefined) {
             // donator++;
-       ;
         } 
         else {
             console.log("Donator already exists. Adding Donation only."); //! Only Temporary
@@ -195,13 +109,4 @@ function formattttttData (){
 function convertNumToWord(numInteger) {
     //Uppercase: Default True
     return num2words.numToWord(numInteger)
-}
-
-function getDonationData(element) {
-    return {
-        "Date": element.voucherDate,
-        "Type": element.description,
-        "Sum": element.sumNet,
-        "SumInWords": convertNumToWord(element.sumNet)
-    }
 }
