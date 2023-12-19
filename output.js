@@ -22,7 +22,7 @@ function setAddressData(APIData) {
 
 /**
  * Format the data sorted by this module to push to Frontend
- * Format = [[customernumber, title, firstName, lastName, streetNumber, postalCodeCity, donationSumAll, [['donationDate', 'type', 'description', 'donationSum', donationSumAsText], ...nextDonation], state],...nextUser]
+ * Format = [[status, customernumber, title, firstName, lastName, streetNumber, postalCodeCity, donationSumAll, [['donationDate', 'type', 'description', 'donationSum', donationSumAsText], ...nextDonation], state],...nextUser]
  * @returns formattedData Array<String>
  */
 function newFormat (){
@@ -69,6 +69,7 @@ function getNextDonator(element) {
     let address = getAddressForContact(element.supplier.id) || undefined;
     if (address !== undefined) {
         return {
+                "Status": 0,
                 "CustomerNumber": handleElement(element.supplier.customerNumber),
                 "AcademicTitle": element.supplier.academicTitle == null ? "" : element.supplier.academicTitle,
                 "Surename": element.supplier.surename == null ? element.supplier.name: element.supplier.surename,
@@ -99,6 +100,7 @@ function getDonatorErrorData (element) {
         surename += ` ${familyname[j]}`;
     } 
     return {
+        "Status": 0,
         "CustomerNumber": "Error, keine Kdnr registriert",
         "AcademicTitle": "",
         "Surename": surename,
