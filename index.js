@@ -1,8 +1,10 @@
 const express = require('express');
 var app = express();
-const PORT = 8040;
+const PORT = require('./configHandling').PORT;
+const VERSION = require('./configHandling').VERSION;
 const requests = require('./requests');
 const out = require('./output');
+const fileHandler = require('./fileHandling');
 
 
 app.get('/', (req, res) => {
@@ -24,15 +26,13 @@ app.get('/getDonations', (req, res) => {
             
             res.send(response);
         })
-        
-    })
-
-    
+    })    
 });
 app.get('/saveData', (req, res) => {
-
+    let response = fileHandler.saveStatusToFile(req.url);
+    res.send({"status": response});     //  Send Status Code (200 for everything okay)
 });
 
-app.listen(PORT, function(){        
-    console.log(`Server running on Port ${PORT}`);
+app.listen(PORT, function(){  
+    console.log(`SevDesk-Extension for BFU-Worms running on Version: ${VERSION}\nServer running on Port ${PORT}`);
 });
