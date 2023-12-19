@@ -1,0 +1,12 @@
+{
+    "application": {
+        "server-version": "v0.1.0"
+    },
+    "server": {
+        "port": 8040
+    },
+    "activeData": {
+        "filename": "data.json",
+        "path": "./"
+    }
+}
