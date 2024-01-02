@@ -11,17 +11,23 @@
   - [x] Format Array to push only useful information to GUI
   <!-- - [ ] code the possibility to change wrong Data in the GUI and push to sevDesk -->
     <!-- - List all Data of specific user to be changend/corrected and then saved -->
+  - [x] Add to JSON-Object Zeitraum IMMER 01.01.XXXX - 31.12.XXXX des jeweiligen Jahres
+  - [x] Create String für Anrede Kommasepariert (Name, Straße Hausnummer, PLZ Stadt, (Land nur wenn nicht Deutschland))
+
   - [ ] manipulate latex files to the Data points in the table
+  - [ ] request to delete specific Item(s) in index.js
+  - [ ] save current Status
+    - [ ] When not yet successfully done: save JSON-Doc locally. On Startup look for JSON-File. If existent, load data from there automatically in the table
+  - [ ] create LaTeX file (on header, then blocks for each donator, then footer)
+
+- LATER:
   - [ ] code the possibility to set tags in Sevdesk and pull these to check whether a Donation-Certificate has been created
-  - [ ] create LaTeX files
-  - [ ] manage LaTeX files as PDF(Save to local Machine/send via mail/send via letter at sevdesk or other)
-  - [ ] Save Data parsed from Frontend
-  - [ ] When not yet successfully done: save JSON-Doc locally. On Startup look for JSON-File. If existent, load data from there automatically in the table
+    <!-- - [ ] manage LaTeX files as PDF(Save to local Machine/send via mail/send via letter at sevdesk or other) -->
 
 - Front-End/GUI
   - [ ] open "Window"/MessageBox on the open Main-Window with the background Greyed out
-  - [ ] View all Data sorted by customernumber
-  - [ ] Determine wether application is Standanlone and saves changed data and status to SevDesk before closing or as a Server with Access-Tool (Tauri Win Form)
+  - [x] View all Data sorted by customernumber
+  - [x] Determine wether application is Standanlone and saves changed data and status to SevDesk before closing or as a Server with Access-Tool (Tauri Win Form)
   - [ ] create Styling
     - [ ] Finish Colorscheme for light/darkmode
     - [ ] finish titlebar
@@ -34,7 +40,7 @@
     - [ ] only show Status speficic listings
     - [ ] create ErrorListing for Entries without a customernumber with ID, supplierAtSave, date; (Create a DonationTable aswell)
 - Extras
-  - [ ] create LaTeX-Template
+  - [x] create LaTeX-Template
 
 - Tag für successful erstellte Donation Certificates
 
