@@ -53,7 +53,6 @@ function newFormat (){
             lastCustomerNumber = customerNumber;
             if(i != 0) { // Prevents from Pushing an empty first Object
                 donatorData.TotalSum = correctSum(totalSum);
-                console.log("CN:" + donatorData.CustomerNumber + " Sum: " + donatorData.TotalSum + " totalSum:" + totalSum+ " SumNet:" + element.sumNet)
                 donatorData.SumInWords = convertNumToWord(totalSum);
                 thinnedData.push(donatorData);
             }
@@ -166,9 +165,7 @@ function correctSum(sum_f){
         sum_s = sum_f + ',00 €';
     } else {                             
         let temp = Number(sum_f).toFixed(2);           // Format to 2-Decimal-Digits
-        console.log(temp);
         sum_s = temp.replace('.', ',') + ' €';         // Format to correct German Euro-Format
-        console.log(sum_s)
     }
     return sum_s;
 }

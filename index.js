@@ -4,6 +4,7 @@ const formatting = require('./formatting');
 const sort = require('./sorting');
 const fileHandler = require('./fileHandling');
 const urlHandler = require('./urlHandling');
+const out = require('./output');
 const process = require('node:process');
 const express = require('express');
 const cors = require('cors');
@@ -25,6 +26,7 @@ const VERSION = config.VERSION;
 const PORT = config.PORT;
 
 let donationData = undefined;
+let year = '';
 app.get('/', (req, res) => {
     res.send({
         "status": "running",
@@ -38,7 +40,8 @@ app.get('/kill', (req, res) => {
 });
 
 app.get('/getDonations', (req, res) => {
-    requests.getDonations(urlHandler.getYearFromQuery(req.url), () => {
+    year = urlHandler.getYearFromQuery(req.url)
+    requests.getDonations(year, () => {
         console.log('DATA GATHERING (Donations) COMPLETE')
         // console.log(requests.getData());
         formatting.setDonationData(requests.getData());
@@ -66,3 +69,8 @@ app.listen(PORT, function(){
     console.log(`SevDesk-Extension for BFU-Worms running on Version: ${VERSION}\nServer running on Port ${PORT}`);
 });
 
+app.get('/createLatex', (req, res) => {
+    out.setYear(year);
+    out.setData(donationData);
+    res.send(out.createTexDoc());
+});
