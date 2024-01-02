@@ -2,16 +2,16 @@ DocumentType = module;
 
 const request = require('./requests');
 
-let data //, originalData = '';
+let data = [];
 let countError = new Array();
 
 module.exports = {
     setDonationData,
-    listDonationsPerUserID
+    listDonationsPerUserID,
+    deleteItemAtIndex
 }
 
 function setDonationData(APIData) {
-    // originalData = APIData;
     data = APIData;
 }
 
@@ -21,7 +21,6 @@ function setDonationData(APIData) {
  */
 function listDonationsPerUserID() {
     countError = [];
-    data = data.objects
     let sorted = []
     var len = data.length
     let smallestCustomerNumber = getSmallestCustomerNumber()
@@ -42,9 +41,14 @@ function deleteCurrentItem(index) {
     return data.length;
 }
 
+
+/**
+ * @returns 
+ */
+
 /**
  * walk thru all donation objects to get smallest customerNumber
- * @returns smallest CustomerNumber and the first listed Index of that Number
+ * @returns {Array<Number>} JSON-Object of smallest CustomerNumber and the first listed Index of that Number
  */
 function getSmallestCustomerNumber() {
     let smallestNum, currentNum = null;
@@ -71,42 +75,24 @@ function getSmallestCustomerNumber() {
 }
 
 
-
 /**
- * Format the data sorted by this module to push to Frontend
- * Format = [[customernumber, title, firstName, lastName, streetNumber, postalCodeCity, donationSumAll, [['donationDate', 'type', 'description', 'donationSum', donationSumAsText], ...nextDonation], state],...nextUser]
- * @returns formattedData Array<String>
+ * Description
+ * @param {any} deleteInfo
+ * @returns {Array<JSON>} manipulated Array with deleted Item At Index
  */
-function formattttttData (){
-    let formattedData = []
-    let lastCustomerNumber = 0;
-    // let donator = -1; // important to have at -1 to avoid the first element in the array to be empty. 
-    
-    for (let i = 0; i < sortedData.length; i++) {
-        const element = sortedData[i];
-        let customerNumber = sortedData[i].supplier.customerNumber || undefined;
-        if(customerNumber != lastCustomerNumber && customerNumber != undefined) {
-            if(lastCustomerNumber != 0) {
-                formattedData.push(donatorData);
-            }
-            donatorData = [];
-            
-            lastCustomerNumber = customerNumber;
-            // donator++;
-            // let donatorData = getDonatorData(element, formattedData[0] == undefined ? 0 : formattedData[donator]['TotalSum']);
-
-            
-        } else if (customerNumber == undefined) {
-            // donator++;
-        } 
-        else {
-            console.log("Donator already exists. Adding Donation only."); //! Only Temporary
-        }       
+function deleteItemAtIndex(deleteInfo) {
+    let donatorIndex = deleteInfo[0];
+    let donationIndex = deleteInfo[1];
+    let deleteAll = deleteInfo[2];
+    if(deleteAll) {
+        return [];
     }
-    return formattedData;
-}
-
-function convertNumToWord(numInteger) {
-    //Uppercase: Default True
-    return num2words.numToWord(numInteger)
+    if (!donationIndex) {
+        //delete whole donator
+        delete data[donatorIndex];
+    } else {
+        //delete only single Donation
+        delete data[donatorIndex].Donations[donationIndex];
+    }
+    return data;
 }
