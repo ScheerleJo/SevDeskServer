@@ -2,10 +2,13 @@ DocumentType = module;
 
 const fs = require('fs');
 const config = require('./configHandling');
+const downloads = require('downloads-folder');
 
 module.exports = {
     saveStatusToFile,
-    loadStatusFromFile
+    loadStatusFromFile,
+    getTexData,
+    writeTexData
 }
 
 /**
@@ -49,11 +52,22 @@ function loadStatusFromFile() {
     return data;
 }
 
-function createTexData(data) {
-    let path = process.cwd() + '/main.tex';
+function writeTexData(data) {
+
+    let path = downloads() + '/main.tex';
     try {
         fs.writeFileSync(path, data);
     } catch (error) {
         return error;
     }
+}
+
+function getTexData(filename) {
+    let path = './LaTeX-Templates/' + filename;
+
+    const data = fs.readFileSync(path ,
+    { encoding: 'utf8', flag: 'r' });
+
+
+    return data;
 }
