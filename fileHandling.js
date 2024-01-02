@@ -4,48 +4,38 @@ const fs = require('fs');
 const config = require('./configHandling');
 
 module.exports = {
-    saveStatusToFile
+    saveStatusToFile,
+    loadStatusFromFile
 }
 
 /**
  * Gef File Path from Config of FileDialog
- * @param {string} reqAction ('save'/'open')
+ * @param {string} reqAction ('save'/'load'/)
  * @returns {string} filePath of selectedDataSafe
  */
 function getFilePath(reqAction){
     let path = config.getSaveDataPath();
     if(path != "") {
-        
+        path = __dirname + "./data.json"
     //Open FileSaveDialog / FileOpenDialog
-    } else if(reqAction == 'save') {
-
-
-    
-    } else if(reqAction == 'load') {
+        switch(reqAction){
+            case 'save': break;
+            case 'load': break;
+        }
 
     }
     return path;
 }
 
-function getDataFromURL(url) {
-    return parseUrl(url).query.data;
-}
-
-
-function saveStatusToFile(url) {
-    let data = getDataFromURL(url);
+function saveStatusToFile(data) {
     let path = getFilePath('save');
-
-
     try {
         fs.writeFileSync(path, data);
-    } catch (Error) {
-        return Error;
+    } catch (error) {
+        return error;
     }
     return 200;
 }
-
-
 
 function loadStatusFromFile() {
     let path = getFilePath('load');
@@ -57,4 +47,13 @@ function loadStatusFromFile() {
         return Error;
     }
     return data;
+}
+
+function createTexData(data) {
+    let path = process.cwd() + '/main.tex';
+    try {
+        fs.writeFileSync(path, data);
+    } catch (error) {
+        return error;
+    }
 }
