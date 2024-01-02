@@ -14,11 +14,11 @@
   - [x] Add to JSON-Object Zeitraum IMMER 01.01.XXXX - 31.12.XXXX des jeweiligen Jahres
   - [x] Create String für Anrede Kommasepariert (Name, Straße Hausnummer, PLZ Stadt, (Land nur wenn nicht Deutschland))
 
-  - [ ] manipulate latex files to the Data points in the table
+  - [x] manipulate latex files to the Data points in the table
+  - [x] create LaTeX file (on header, then blocks for each donator, then footer)
   - [ ] request to delete specific Item(s) in index.js
   - [ ] save current Status
     - [ ] When not yet successfully done: save JSON-Doc locally. On Startup look for JSON-File. If existent, load data from there automatically in the table
-  - [ ] create LaTeX file (on header, then blocks for each donator, then footer)
 
 - LATER:
   - [ ] code the possibility to set tags in Sevdesk and pull these to check whether a Donation-Certificate has been created
