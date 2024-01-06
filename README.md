@@ -9,6 +9,7 @@
   - [x] sort all information from SevDesk Data (get relevant Data from Donors)
   - [x] Backend Cleanup
   - [x] Format Array to push only useful information to GUI
+  - [x] Error: Numbers with more than 12 digits in Cent
   <!-- - [ ] code the possibility to change wrong Data in the GUI and push to sevDesk -->
     <!-- - List all Data of specific user to be changend/corrected and then saved -->
   - [x] Add to JSON-Object Zeitraum IMMER 01.01.XXXX - 31.12.XXXX des jeweiligen Jahres
@@ -16,9 +17,9 @@
 
   - [x] manipulate latex files to the Data points in the table
   - [x] create LaTeX file (on header, then blocks for each donator, then footer)
-  - [ ] request to delete specific Item(s) in index.js
-  - [ ] save current Status
-    - [ ] When not yet successfully done: save JSON-Doc locally. On Startup look for JSON-File. If existent, load data from there automatically in the table
+  - [x] request to delete specific Item(s) in index.js
+  - [x] save current Status
+  - [] If existent, load data from data.json automatically in server and wait for request in the table
 
 - LATER:
   - [ ] code the possibility to set tags in Sevdesk and pull these to check whether a Donation-Certificate has been created
@@ -38,10 +39,12 @@
   - [ ] Automatically create a Table for all Sorted-Data-Points
     - [ ] Alert: first save then overwrite existing Table
     - [ ] only show Status speficic listings
-    - [ ] create ErrorListing for Entries without a customernumber with ID, supplierAtSave, date; (Create a DonationTable aswell)
+    - [x] create ErrorListing for Entries without a customernumber with ID, supplierAtSave, date; (Create a DonationTable aswell)
 - Extras
   - [x] create LaTeX-Template
-
+  - [ ] create Documentation
+  - [ ] create Executable for Server and Frontend
+  
 - Tag für successful erstellte Donation Certificates
 
 - abhaken, wenn geprüft
