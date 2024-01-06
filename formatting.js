@@ -122,12 +122,13 @@ function convertNumToWord(num_f) {
     if (num_f % 1 == 0){
         return num2words.numToWord(num_f);
     }
-    let split = (num_f + '').split('.');
+    let num_format = Number(num_f).toFixed(2);
+    let split = (num_format + '').split('.');
     let retValue;
     if(split[0] == 0 ) {
         retValue = num2words.numToWord(split[1], {indefinite_ein:true}) + ' Cent'; 
     } else {
-        retValue = num2words.numToWord(split[0], {indefinite_ein:true}) + ' Euro ' + num2words.numToWord(split[1], {indefinite_ein:true}) + " Cent";
+        retValue = num2words.numToWord(split[0], {indefinite_ein:true}) + ' Euro ' + num2words.numToWord(split[1], {indefinite_ein:true}); // + " Cent";
     }
     return retValue;
 

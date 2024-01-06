@@ -2,4 +2,4 @@
 /samples
 .env
 /SevDeskGui
-/config/default.json
+*data.json

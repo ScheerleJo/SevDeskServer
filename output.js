@@ -68,8 +68,9 @@ function createLetter(donatorElement) {
         const donation = donatorElement.Donations[i];
         tableData +=  `${donation.Date} & ${donation.Type} & ${donation.Waive} & ${donation.Sum} \\\\\n`;
     }
+    let file = begin + opening + p1 + textbf1 + p2 + textbf2 + p3 + closing + textbf3 + additional + textbf4 + tableHead + tableData + end;
 
-    return begin + opening + p1 + textbf1 + p2 + textbf2 + p3 + closing + textbf3 + additional + textbf4 + tableHead + tableData + end;
+    return file;
 }
 
 
