@@ -26,14 +26,14 @@ function getYearFromQuery(url) {
  */
 function getDeleteItem(url) {
     let deleteInfo = parseUrl(url, true).query;
+    if(deleteInfo.donatorIndex == undefined) {
+        return console.error('Error at /deleteItem Request!\nNo donator was specified to delete.\n\n Error was thrown at `urlHandling.js:36`');
+    }
     if(deleteInfo.donationIndex == undefined) {
         deleteInfo.donationIndex = false;
     }
     if(deleteInfo.deleteAll == undefined){
         deleteInfo.deleteAll = false;
-    }
-    if(deleteInfo.donatorIndex == undefined) {
-        return console.error('Error at /deleteItem Request!\nNo donator was specified to delete.\n\n Error was thrown at `urlHandling.js:36`');
     }
     return deleteInfo;
 }

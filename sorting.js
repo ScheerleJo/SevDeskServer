@@ -40,14 +40,8 @@ function deleteCurrentItem(index) {
     data.splice(index, 1);
     return data.length;
 }
-
-
 /**
- * @returns 
- */
-
-/**
- * walk thru all donation objects to get smallest customerNumber
+ * walk thru all Voucher objects to get smallest customerNumber
  * @returns {Array<Number>} JSON-Object of smallest CustomerNumber and the first listed Index of that Number
  */
 function getSmallestCustomerNumber() {
@@ -76,23 +70,47 @@ function getSmallestCustomerNumber() {
 
 
 /**
- * Description
+ * Deletes the Item at the spcified Index. It is possible to delete Donators or Donations or clear the entire Array
  * @param {any} deleteInfo
  * @returns {Array<JSON>} manipulated Array with deleted Item At Index
  */
 function deleteItemAtIndex(deleteInfo) {
-    let donatorIndex = deleteInfo[0];
-    let donationIndex = deleteInfo[1];
-    let deleteAll = deleteInfo[2];
+    let donatorIndex = deleteInfo.donatorIndex;
+    let donationIndex = deleteInfo.donationIndex;
+    let deleteAll = deleteInfo.deleteAll;
     if(deleteAll) {
         return [];
     }
     if (!donationIndex) {
         //delete whole donator
-        delete data[donatorIndex];
+        data.splice(donatorIndex, 1);
+        return data
     } else {
         //delete only single Donation
-        delete data[donatorIndex].Donations[donationIndex];
+        if (data[donatorIndex].Donations.length == 1 ) {
+            //delete whole donator
+            data.splice(donatorIndex, 1);
+            return data
+        }
+        else {
+            data[donatorIndex].Donations.splice(donationIndex, 1);
+            return data;
+        }
     }
-    return data;
+}
+
+
+/**
+ * Walk thru the given array and delete elements that only have 'null' as value 
+ * @param {Array<JSON>} array
+ * @returns {Array<JSON>} compactedArray
+ */
+function compactArray(array) {
+    let newArray = [];
+    for (let i = 0; i < array.length; i++) {
+        if(array[i] != null) {
+            newArray.push(array[i]);
+        }
+    }
+    return newArray;
 }
