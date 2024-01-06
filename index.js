@@ -10,6 +10,11 @@ const express = require('express');
 const cors = require('cors');
 var app = express();
 
+const VERSION = config.VERSION;
+const PORT = config.PORT;
+
+console.log(`SevDesk-Extension for Theologische Fernschule e.V. running on Version: ${VERSION}`)
+console.log('Trying to start the server...')
 
 let corsOptions = {
     origin: '*',
@@ -17,16 +22,12 @@ let corsOptions = {
     methods: "GET, PUT, POST"
 }
 
-// Options for the Debug Helper to function properly
+// Options for the FrontEnd to function properly
 app.use(cors(corsOptions));
 
-
-
-const VERSION = config.VERSION;
-const PORT = config.PORT;
-
-let donationData = undefined;
+let donationData = fileHandler.loadStatusFromFile();
 let year = '';
+
 app.get('/', (req, res) => {
     res.send({
         "status": "running",
@@ -40,37 +41,65 @@ app.get('/kill', (req, res) => {
 });
 
 app.get('/getDonations', (req, res) => {
-    year = urlHandler.getYearFromQuery(req.url)
-    requests.getDonations(year, () => {
-        console.log('DATA GATHERING (Donations) COMPLETE')
-        // console.log(requests.getData());
-        formatting.setDonationData(requests.getData());
-        requests.getAllAddresses(() => {
-            console.log('DATA GATHERING (Addresses) COMPLETE')
-            formatting.setAddressData(requests.getAddressData());
-            donationData = formatting.newFormat();
-            res.send(donationData);
-            console.log('DATA PUSHED SUCCESSFULLY');
-        })
-    })    
+    res.send(fetchDonations(req, res));    
 });
 app.get('/saveData', (req, res) => {
     let response = fileHandler.saveStatusToFile(donationData);
     res.send({"status": response});     //  Send Status Code (200 for everything okay)
+});
+app.get('/loadData', (req, res) => {
+    let response;
+    if(donationData === undefined) {
+        response = fileHandler.loadStatusFromFile();
+        if (response === undefined){
+
+        }
+    } else {
+        response = donationData;
+    }
+    res.send({
+        "status": response === undefined ? 'Error with loading data from json file': 200,
+        "response": response});     //  Send Status Code (200 for everything okay)
 });
 
 app.get('/deleteItem', (req, res) => { ///deleteItem?donatorIndex=...(num)&donationIndex=...(num)&deleteAll=...(true/false)
     sort.setDonationData(donationData);
     
     donationData = sort.deleteItemAtIndex(urlHandler.getDeleteItem(req.url));
-});
-
-app.listen(PORT, function(){  
-    console.log(`SevDesk-Extension for BFU-Worms running on Version: ${VERSION}\nServer running on Port ${PORT}`);
+    res.send(donationData);
 });
 
 app.get('/createLatex', (req, res) => {
     out.setYear(year);
     out.setData(donationData);
-    res.send(out.createTexDoc());
+    let output = out.createTexDoc();
+    let success = fileHandler.writeTexDoc(output);
+    if (success != 200){
+        res.send(success);
+    }
+    else {
+        res.send({"status":"LaTeX File Created Successfully!"})
+    }
 });
+
+
+app.listen(PORT, function(){  
+    console.log(`Server running on Port ${PORT}`);
+});
+
+
+
+function fetchDonations(req, res) {
+    year = urlHandler.getYearFromQuery(req.url)
+    requests.getDonations(year, () => {
+        console.log('DATA GATHERING (Donations) COMPLETE')
+        formatting.setDonationData(requests.getData());
+        requests.getAllAddresses(() => {
+            console.log('DATA GATHERING (Addresses) COMPLETE')
+            formatting.setAddressData(requests.getAddressData());
+            donationData = formatting.newFormat();
+            console.log('DATA PUSHED SUCCESSFULLY');
+            return donationData;
+        })
+    })
+}

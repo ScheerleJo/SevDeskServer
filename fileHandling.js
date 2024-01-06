@@ -8,7 +8,7 @@ module.exports = {
     saveStatusToFile,
     loadStatusFromFile,
     getTexData,
-    writeTexData
+    writeTexDoc
 }
 
 /**
@@ -18,22 +18,18 @@ module.exports = {
  */
 function getFilePath(reqAction){
     let path = config.getSaveDataPath();
-    if(path != "") {
-        path = __dirname + "./data.json"
-    //Open FileSaveDialog / FileOpenDialog
-        switch(reqAction){
-            case 'save': break;
-            case 'load': break;
-        }
-
-    }
+    path = __dirname + "\\data.json"
+    // if(path == "") {
+    //Open FileSaveDialog / FileOpenDialog in future
+    //}
     return path;
 }
 
-function saveStatusToFile(data) {
+function saveStatusToFile(arrayData) {
     let path = getFilePath('save');
+    let json = JSON.stringify(arrayData);
     try {
-        fs.writeFileSync(path, data);
+        fs.writeFileSync(path, json);
     } catch (error) {
         return error;
     }
@@ -42,17 +38,17 @@ function saveStatusToFile(data) {
 
 function loadStatusFromFile() {
     let path = getFilePath('load');
-    let data = "";
-
-    try{
-        data = fs.readFileSync(path);
-    } catch (Error) {
-        return Error;
+    try {
+        const data = fs.readFileSync(path ,
+        { encoding: 'utf8', flag: 'r' });
+        return JSON.parse(data);
+    } catch(error) {
+        console.log('No status could be loaded from: ' + path)
+        return undefined;
     }
-    return data;
 }
 
-function writeTexData(data) {
+function writeTexDoc(data) {
 
     let path = downloads() + '/main.tex';
     try {
@@ -60,14 +56,12 @@ function writeTexData(data) {
     } catch (error) {
         return error;
     }
+    return 200;
 }
 
 function getTexData(filename) {
     let path = './LaTeX-Templates/' + filename;
-
     const data = fs.readFileSync(path ,
     { encoding: 'utf8', flag: 'r' });
-
-
     return data;
 }
