@@ -1,21 +1,15 @@
 DocumentType = module;
-
-const { configDotenv, config } = require('dotenv');
 const axios = require('axios');
-const fs = require('fs');
-const parseUrl = require('url-parse');
 require('dotenv').config();
 
 let responseData = 'Hello, i am Data'
-let adressData = 'Hello, i am Data'
+let addressData = 'Hello, i am Data'
 
 module.exports = {
     getDonations,
-    getAdressByContactID,
-    getYearFromQuery,
     getData,
-    adressData,
-    getAllAdresses
+    getAddressData,
+    getAllAddresses
 }
 
 
@@ -27,19 +21,16 @@ async function makeSevDeskRequest(type, querystring) {
     if(type == 'GET'){
         response = await axios.get(req, config).catch((error) => {
             console.log(error);
-        })
-    
+        });    
         try {
-            data = response.data
+            data = response.data;
         } catch (error) {
-            console.log(error)
+            console.log(error);
             await setTimeout(() => {return;}, 500);
-            console.log('sleep')
+            console.log('sleep');
         }
-        
     }
     let resData = await response.data
-    // console.log(resData)
     return await resData
 }
 
@@ -50,33 +41,15 @@ async function getDonations(year, _callback){
     _callback();
 }
 
-async function getAllAdresses(_callback) {
+async function getAllAddresses(_callback) {
     let request = "ContactAddress?limit=none&embed=contact%2Cstreet%2Czip%2Ccity%2Ccountry";
-    responseData = await makeSevDeskRequest('GET', request);
+    addressData = await makeSevDeskRequest('GET', request);
     _callback();
 }
 
-async function getContacts(){
-    return await makeSevDeskRequest('GET', 'Contact')
-}
-
-async function getContactByID(id){
-    return await makeSevDeskRequest('GET', 'Contact/' + id)
-}
-
-async function getAdressByContactID (id, _callback) {
-    adressData = await makeSevDeskRequest('GET', `ContactAddress?contact[id]=${id}&contact[objectName]=Contact`)
-
-    _callback();
-    // https://my.sevdesk.de/api/v1/ContactAddress?contact[id]=37668965&contact[objectName]=Contact
-}
-
-function getYearFromQuery(url) {
-    return parseUrl(url).query.year;
-}
 function getData(){
     return responseData;
 }
-function getAdressData(){
-    return adressData;
+function getAddressData(){
+    return addressData;
 }

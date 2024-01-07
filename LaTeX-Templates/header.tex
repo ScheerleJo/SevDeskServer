@@ -1,0 +1,70 @@
+\documentclass[fontsize=11pt, twoside]{scrlttr2}
+
+%%%%%%%%%%%%%%%%%%%%
+%% Standardpakete %%
+%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[ngerman]{babel} % deutsche Sprache
+\usepackage{graphicx} % Benötigt um Grafiken einfügen zu können
+\usepackage{booktabs} % schönere Tabellen
+
+%%%%%%%%%%%%%%%%
+%% Schriftart %%
+%%%%%%%%%%%%%%%%
+
+\usepackage{fontspec} % Packet, um externe Schriften laden zu können
+\renewcommand{\familydefault}{\sfdefault} % Setzt den sansserif-Font als Standardschrift
+\setsansfont[ % Definiert Sarabun als sansserif-Font
+    %Path=Settings/,
+    BoldFont=Sarabun-Bold.ttf,
+    ItalicFont=Sarabun-Italic.ttf
+]{Sarabun-Regular.ttf}
+\usepackage{microtype} % verbessert Typographie
+
+
+
+
+\KOMAoptions{
+    DIV=12,
+    fromlogo, %Logo ein
+    fromalign=right, %Absender rechts
+    fromphone, % Absender Telefon anzeigen
+    fromemail, % Absender E-Mail anzeigen 
+    fromurl, % Absender Webseite anzeigen
+    symbolicnames=on, % Symbole bei Telefon und E-Mail
+    refline=nodate, %kein Datum 
+    parskip=half
+}
+
+\setplength{refaftervskip}{0pt}
+\setplength{subjectaftervskip}{1em}
+%\setplength{sigbeforevskip}{2em}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Angaben zum Absender (Empfänger der Zuwendung  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setkomavar{fromaddress}{Prinz-Carl-Anlage 24\\67547 Worms}
+\setkomavar{frombank}{IBAN DE65\,5206\,0410\,0004\,0012\,49\\Evangelische Bank\\BIC GENODEF1EK1}
+\setkomavar{fromemail}{info@bfu-online.org}
+\setkomavar{fromlogo}{\includegraphics[width=8cm]{tfs 231213 Logos für Briefkopf.pdf}}
+\setkomavar{fromname}{Theologische Fernschule e.\,V.}
+\setkomavar{fromphone}{06241 / 200 331}
+\setkomavar{fromurl}{www.theologischefernschule.de}
+\setkomavar{fromzipcode}{67547}
+
+\setkomavar{subject}{Sammelbestätigung über Geldzuwendungen}
+
+\setkomavar{signature}{Worms, 1.1.2024, Theologische Fernschule e.\,V.}
+
+% \setkomavar{firstfoot}{%
+% \parbox[b]{\linewidth}{%
+% \centering\small\def\\{, }\usekomavar{frombank}%
+% }%
+% }
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%
+%% Briefe ab hier %%
+%%%%%%%%%%%%%%%%%%%%
