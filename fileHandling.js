@@ -25,9 +25,15 @@ function getFilePath(reqAction){
     return path;
 }
 
-function saveStatusToFile(arrayData) {
+function saveStatusToFile(arrayData, year) {
     let path = getFilePath('save');
-    let json = JSON.stringify(arrayData);
+
+    let data = {
+        "Year": year,
+        "Data": arrayData
+    }
+
+    let json = JSON.stringify(data);
     try {
         fs.writeFileSync(path, json);
     } catch (error) {

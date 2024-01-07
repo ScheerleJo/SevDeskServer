@@ -24,9 +24,13 @@ let corsOptions = {
 
 // Options for the FrontEnd to function properly
 app.use(cors(corsOptions));
+let donationData, year;
+let loadedData =  fileHandler.loadStatusFromFile();
 
-let donationData = fileHandler.loadStatusFromFile();
-let year = '';
+if (loadedData != undefined) {
+    donationData = loadedData.Data;
+    year = loadedData.Year;
+}
 
 app.get('/', (req, res) => {
     res.send({
@@ -39,27 +43,33 @@ app.get('/kill', (req, res) => {
     res.send({"status":"shutdown"});
     process.exit()
 });
+app.get('/fetchNew', (req, res) => {
+    year = urlHandler.getYearFromQuery(req.url)
+    requests.getDonations(year, () => {
+        console.log('DATA GATHERING (Donations) COMPLETE')
+        formatting.setDonationData(requests.getData());
+        requests.getAllAddresses(() => {
+            console.log('DATA GATHERING (Addresses) COMPLETE')
+            formatting.setAddressData(requests.getAddressData());
+            donationData = formatting.newFormat();
+            console.log('DATA PUSHED SUCCESSFULLY');
+            res.send({
+                "Year": year,
+                "Data": donationData
+            });
+        })
+    })
+})
 
-app.get('/getDonations', (req, res) => {
-    res.send(fetchDonations(req, res));    
-});
 app.get('/saveData', (req, res) => {
-    let response = fileHandler.saveStatusToFile(donationData);
+    let response = fileHandler.saveStatusToFile(donationData, year);
     res.send({"status": response});     //  Send Status Code (200 for everything okay)
 });
 app.get('/loadData', (req, res) => {
-    let response;
-    if(donationData === undefined) {
-        response = fileHandler.loadStatusFromFile();
-        if (response === undefined){
-
-        }
-    } else {
-        response = donationData;
-    }
     res.send({
-        "status": response === undefined ? 'Error with loading data from json file': 200,
-        "response": response});     //  Send Status Code (200 for everything okay)
+        "Year": year,
+        "Data": donationData
+    });
 });
 
 app.get('/deleteItem', (req, res) => { ///deleteItem?donatorIndex=...(num)&donationIndex=...(num)&deleteAll=...(true/false)
@@ -68,6 +78,9 @@ app.get('/deleteItem', (req, res) => { ///deleteItem?donatorIndex=...(num)&donat
     donationData = sort.deleteItemAtIndex(urlHandler.getDeleteItem(req.url));
     res.send(donationData);
 });
+app.get('/updateStatuses', (req, res) => {
+    
+})
 
 app.get('/createLatex', (req, res) => {
     out.setYear(year);
@@ -86,20 +99,3 @@ app.get('/createLatex', (req, res) => {
 app.listen(PORT, function(){  
     console.log(`Server running on Port ${PORT}`);
 });
-
-
-
-function fetchDonations(req, res) {
-    year = urlHandler.getYearFromQuery(req.url)
-    requests.getDonations(year, () => {
-        console.log('DATA GATHERING (Donations) COMPLETE')
-        formatting.setDonationData(requests.getData());
-        requests.getAllAddresses(() => {
-            console.log('DATA GATHERING (Addresses) COMPLETE')
-            formatting.setAddressData(requests.getAddressData());
-            donationData = formatting.newFormat();
-            console.log('DATA PUSHED SUCCESSFULLY');
-            return donationData;
-        })
-    })
-}
