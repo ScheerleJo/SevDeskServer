@@ -19,7 +19,7 @@
   - [x] create LaTeX file (on header, then blocks for each donator, then footer)
   - [x] request to delete specific Item(s) in index.js
   - [x] save current Status
-  - [] If existent, load data from data.json automatically in server and wait for request in the table
+  - [x] If existent, load data from data.json automatically in server and wait for request in the table
 
 - LATER:
   - [ ] code the possibility to set tags in Sevdesk and pull these to check whether a Donation-Certificate has been created
@@ -27,18 +27,22 @@
 
 - Front-End/GUI
   - [ ] open "Window"/MessageBox on the open Main-Window with the background Greyed out
+  - [x] Message Box (status-Info);
   - [x] View all Data sorted by customernumber
   - [x] Determine wether application is Standanlone and saves changed data and status to SevDesk before closing or as a Server with Access-Tool (Tauri Win Form)
   - [ ] create Styling
     - [ ] Finish Colorscheme for light/darkmode
-    - [ ] finish titlebar
+    - [x] finish titlebar
   - [ ] Gathering Data:
-    - [ ] Change Donation-Table to one column more with sum as writtenWord
+    - [x] Change Donation-Table to one column more with sum as writtenWord
     - [ ] Enter Authorization-Key
-    - [ ] Button for Requesting Data with selectable Year
+    - [x] Button for Requesting Data with selectable Year
+    - [x] Get Data on Startup
   - [ ] Automatically create a Table for all Sorted-Data-Points
-    - [ ] Alert: first save then overwrite existing Table
-    - [ ] only show Status speficic listings
+    - [ ] Delete Selected Data
+
+    - [ ] Move Donators between statuses and Send for individual Donator Info to Server to update the status
+    - [x] only show Status speficic listings
     - [x] create ErrorListing for Entries without a customernumber with ID, supplierAtSave, date; (Create a DonationTable aswell)
 - Extras
   - [x] create LaTeX-Template
