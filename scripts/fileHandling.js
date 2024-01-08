@@ -3,12 +3,15 @@ DocumentType = module;
 const fs = require('fs');
 const config = require('./configHandling');
 const downloads = require('downloads-folder');
+const path = require('path');
+const os = require('os')
 
 module.exports = {
     saveStatusToFile,
     loadStatusFromFile,
     getTexData,
-    writeTexDoc
+    writeTexDoc,
+    writeDotEnvToken
 }
 
 /**
@@ -17,16 +20,16 @@ module.exports = {
  * @returns {string} filePath of selectedDataSafe
  */
 function getFilePath(reqAction){
-    let path = config.getSaveDataPath();
-    path = __dirname + "\\data.json"
+    let filePath = config.getSaveDataPath();
+    filePath = __dirname + "\\data.json"
     // if(path == "") {
     //Open FileSaveDialog / FileOpenDialog in future
     //}
-    return path;
+    return filePath;
 }
 
 function saveStatusToFile(arrayData, year) {
-    let path = getFilePath('save');
+    let filePath = getFilePath('save');
 
     let data = {
         "Year": year,
@@ -35,7 +38,7 @@ function saveStatusToFile(arrayData, year) {
 
     let json = JSON.stringify(data);
     try {
-        fs.writeFileSync(path, json);
+        fs.writeFileSync(filePath, json);
     } catch (error) {
         return error;
     }
@@ -43,22 +46,28 @@ function saveStatusToFile(arrayData, year) {
 }
 
 function loadStatusFromFile() {
-    let path = getFilePath('load');
+    let filePath = getFilePath('load');
     try {
-        const data = fs.readFileSync(path ,
+        const data = fs.readFileSync(filePath ,
         { encoding: 'utf8', flag: 'r' });
         return JSON.parse(data);
     } catch(error) {
-        console.log('No status could be loaded from: ' + path)
+        console.log('No status could be loaded from: ' + filePath)
         return undefined;
     }
 }
 
 function writeTexDoc(data) {
 
-    let path = downloads() + '/main.tex';
+    let filePath;
+    let inject = 0;
+    do {
+        filePath = downloads();
+        filePath += `/main${inject == 0 ? '': inject}.tex`;
+        inject ++;
+    } while(fs.existsSync(filePath));
     try {
-        fs.writeFileSync(path, data);
+        fs.writeFileSync(filePath, data);
     } catch (error) {
         return error;
     }
@@ -66,8 +75,15 @@ function writeTexDoc(data) {
 }
 
 function getTexData(filename) {
-    let path = './LaTeX-Templates/' + filename;
-    const data = fs.readFileSync(path ,
+    let filePath = './LaTeX-Templates/' + filename;
+    const data = fs.readFileSync(filePath ,
     { encoding: 'utf8', flag: 'r' });
     return data;
+}
+
+function writeDotEnvToken(token) {
+    let filePath = path.resolve(__dirname, ".env")
+    let vars = ['API_TOKEN = ' + token];
+    fs.writeFileSync(filePath, vars.join(os.EOL));
+
 }

@@ -5,7 +5,9 @@ const parseUrl = require('url-parse');
 
 module.exports = {
     getYearFromQuery,
-    getDeleteItem
+    getDeleteItem,
+    getMoveItem,
+    getToken
 }
 
 
@@ -36,4 +38,22 @@ function getDeleteItem(url) {
         deleteInfo.deleteAll = false;
     }
     return deleteInfo;
+}
+
+/**
+ * Get donatorIndex from QueryParams
+ * @param {url} url
+ * @returns {Number} Index of Donator to Move the status;
+ */
+function getMoveItem(url) {
+    return parseUrl(url, true).query.donatorIndex;
+}
+/**
+ * Get Token from QueryParams
+ * @param {url} url
+ * @returns {String} API-Token from SevDesk;
+ */
+function getToken(url) {
+    console.log(url)
+    return parseUrl(url, true).query.token;
 }

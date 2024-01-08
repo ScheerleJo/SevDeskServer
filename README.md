@@ -1,57 +1,110 @@
-# SevDeskDonations
+# SevDesk-Extension Spendenbescheinigung
 
- A tool to automatically create Donation-Certificates depending on the data from SevDesk
+Ein Tool um automatisch Spendenbescheinigungen zu Generieren. Dazu werden Daten von der [SevDesk-API](https://api.sevdesk.de/) verarbeitet um Sammelbriefe für alle Spender zu erstellen.
 
 ## Simple structure
 
-- Back-End
-  - [x] get info from SevDesk
-  - [x] sort all information from SevDesk Data (get relevant Data from Donors)
-  - [x] Backend Cleanup
-  - [x] Format Array to push only useful information to GUI
-  - [x] Error: Numbers with more than 12 digits in Cent
-  <!-- - [ ] code the possibility to change wrong Data in the GUI and push to sevDesk -->
-    <!-- - List all Data of specific user to be changend/corrected and then saved -->
-  - [x] Add to JSON-Object Zeitraum IMMER 01.01.XXXX - 31.12.XXXX des jeweiligen Jahres
-  - [x] Create String für Anrede Kommasepariert (Name, Straße Hausnummer, PLZ Stadt, (Land nur wenn nicht Deutschland))
+Standardmäßig werden innerhalb von einem Gerät Befehlen auf dem Localhost 127.0.0.1:8040 gesendet. Sollte dieser belegt oder aus anderen Gründen nicht benuztbar sein bitte melden.
 
-  - [x] manipulate latex files to the Data points in the table
-  - [x] create LaTeX file (on header, then blocks for each donator, then footer)
-  - [x] request to delete specific Item(s) in index.js
-  - [x] save current Status
-  - [x] If existent, load data from data.json automatically in server and wait for request in the table
+### Backend
 
-- LATER:
-  - [ ] code the possibility to set tags in Sevdesk and pull these to check whether a Donation-Certificate has been created
-    <!-- - [ ] manage LaTeX files as PDF(Save to local Machine/send via mail/send via letter at sevdesk or other) -->
+Es gibt einen Server im Hintergrund. Er handhabt die gesamte Datenstruktur und erstellt die Spendenbescheinugungen. Diese werden am Schluss als Lua-LaTeX (.tex) Datei ausgegeben.
 
-- Front-End/GUI
-  - [ ] open "Window"/MessageBox on the open Main-Window with the background Greyed out
-  - [x] Message Box (status-Info);
-  - [x] View all Data sorted by customernumber
-  - [x] Determine wether application is Standanlone and saves changed data and status to SevDesk before closing or as a Server with Access-Tool (Tauri Win Form)
-  - [ ] create Styling
-    - [ ] Finish Colorscheme for light/darkmode
-    - [x] finish titlebar
-  - [ ] Gathering Data:
-    - [x] Change Donation-Table to one column more with sum as writtenWord
-    - [ ] Enter Authorization-Key
-    - [x] Button for Requesting Data with selectable Year
-    - [x] Get Data on Startup
-  - [ ] Automatically create a Table for all Sorted-Data-Points
-    - [ ] Delete Selected Data
+### Frontend
 
-    - [ ] Move Donators between statuses and Send for individual Donator Info to Server to update the status
-    - [x] only show Status speficic listings
-    - [x] create ErrorListing for Entries without a customernumber with ID, supplierAtSave, date; (Create a DonationTable aswell)
-- Extras
-  - [x] create LaTeX-Template
-  - [ ] create Documentation
-  - [ ] create Executable for Server and Frontend
-  
-- Tag für successful erstellte Donation Certificates
+Zur Benutzerfreundlichen Bedienung gibt es eine Graphische Oberfläche, die auf dem [Tauri-Framework](https://tauri.app/) basiert und alle wichtigen Funktionen bereitstellt.
 
-- abhaken, wenn geprüft
-- mehrere gleichzeitig abhaken      [FutureMusic](ttps://stackoverflow.com/questions/659508/how-can-i-shift-select-multiple-checkboxes-like-gmail)
-- Button zum pdf erstellen
-(- Frage ob alles passt, wenn ja wird Tag geschrieben (bei Contact als auch allen Voucher))
+Mehr zum Frontend [Hier](https://github.com/ScheerleJo/SevDeskClient)
+
+## Installations Prozess
+
+Das Tool besteht aus 2 Bestandteilen: dem Client und dem Server
+
+### Aufsetzen des Node.JS Servers
+
+Da der Webserver, welcher im Hintergrund läuft noch ein Work in Progress ist, ist die Installation nicht ganz so trivial.
+
+1. Zunächst muss Node.JS installiert werden. Hier der Download-Link für die Aktuelle Version: [20.10.0](https://nodejs.org/dist/v20.10.0/node-v20.10.0-x64.msi) Es ist sinnvoll die Zusätzlichen Pakete wie C/C++ in diesem Installationsprozess mit zu installieren.
+
+2. Wenn die Installation erfolgreich war kann als nächstes das aktuelle [Release](https://github.com/ScheerleJo/SevDeskServer/releases) von SevDesk-Server heruntergeladen werden. Dazu am besten vom `Latest`-Release das zip-Verzeichnis runterladen.
+
+3. Das Zip-Verzeichnis wird nun am Speicherort der Wahl entpackt.
+4. In dem dem Ordner `SevDeskServer-*Version*` muss nun die Konsole geöffnet werden. Das funktioniert in Windows mit gedrückter Shift-Taste und einen Rechtsklick auf den Ordner. In dem erweiterten Menü kann man nun `Eingabeaufforderung hier öffnen` auswählen. Diese öffnet sich anschließend.
+5. Wenn die Konsole geöffnet ist, muss folgender Befehl eingegeben werden, um alle Abhängikeiten herunterzuladen:
+
+``` PowerShell
+> npm install
+```
+
+6. Nun kann der Server ausgeführt werden. Dazu einfach auf den folgenden Befehl in die Konsole eingeben:
+
+``` PowerShell
+> npm run start
+```
+
+Anschließend zeigt die Konsole Text an, dass der Server auf Port 8040 läuft.
+
+WICHTIG: Diese Konsole darf während der Laufzeit **NICHT** geschlossen werden. Minimieren ist in Ordnung. Wenn sie geschlossen wird ohne über die Benutzeroberfläche zu speichern, ist der Fortschritt verloren und es muss von vorne begonnen werden.
+
+### Benutzeroberfläche installieren
+
+Da es nicht besonders schön und praktisch ist eine Konsole zu bedienen, gibt es für diese Anwendung eine Benutzeroberfläche.
+Diese ist deutlich leichter zu installieren.
+Dazu muss lediglich der Installer aus dem Aktuellen [Release](https://github.com/ScheerleJo/SevDeskClient/releases) heruntergeladen werden. Dieser führt anschließend durch den gesamten Installationsprozess.
+
+WICHTIG: Um das Tool sauber nutzen zu können muss der Server laufen, **BEVOR** die Benutzeroberfläche gestartet wird.
+
+## Grundlegende Funktionen
+
+### API-Schlüssel
+
+Zunächst muss der API-Schlüssen von SevDesk generiert werden. Dieser kann anschließend im GUI eingefügt und gespeichert werden. Dazu auf `Einstellungen > Authorisierungs-Token`
+Hier kann der Schlüssel eingegeben werden.
+
+Dieser Prozess muss nur beim ersten einrichten gemacht werden.
+
+### Die Ersten Daten von SevDesk
+
+Anschließend kann das Jahr ausgewählt werden für das die Spendenbescheinigungen erstellt werden sollen. Danach auf `Daten neu von SevDesk holen` klicken. Nun werden alle Daten importiert.
+Diese Funktion kann einige Sekunden dauern.
+Wenn alle Daten angekommen sind wird automatisch das Fenster gewechselt zu einer Ansicht in der man alle Spender aus dem ausgewählten Jahr sieht.
+
+Hier stehen (hoffentlich) alle relevanten Daten, um mögliche Fehler zu finden und diese zu beheben.
+
+### Überblick
+
+Es gibt effektiv 2 unterschiedliche Fenster zwischen denen hin und her gewechselt werden kann. Das erste ist die Start-Ansicht. Hier ist das aktuell zu bearbeitende Jahr sichtbar, sowie der Fortschritt. Ein Klick auf das Haus im oberen Linken Eck führt direkt zur Startseite zurück.
+
+<img src="./Documentation/Start-Overview.png">
+
+Wenn die Daten neu importiert werden beginnt jeder Datensatz bei Offen. Ein Klick in der Tabelle auf die Spalte "Offen" zeigt die untenstehende beispielhafte Liste. Zunächst muss jeder Datensatz geprüft werden, ob Daten stimmen und ob die Spender vollständig sind (also voller Name, Adresse, usw.)
+
+<img src="./Documentation/Listing-Overview.png">
+
+Einzelne Spenden werden über den kleinen Pfeil in der Spalte "Mehr" sichtbar. Ein erneuter Klick lässt diese wieder verschwinden.
+
+Bei jedem Spender der geprüft ist, kann das Kästchen in der ersten Spalte für den jeweiligen Spender angeklickt werden. Wenn alle auf einmal ausgewählt werden sollen, kann das Kästchen in der blauen Zeile angeklickt werden.
+
+Wenn nun die Daten geprüft und ausgewählt sind kann auf den Knopf `LaTeX datei aus ausgewählten Elementen erstellen` geklickt werden. Diese Elemente verschwinden aus der aktuell angezeigten Tabelle und werden in den nächsten Status verschoben.
+
+Die LaTeX Datei wurde erstellt und befindet sich im Downloads-Ordner.
+
+Diese kann nun in Overleaf importiert werden und zu einem PDF kompiliert werden.
+
+Nun oder nach dem Ausdrucken können erneut die Daten aus der Tabelle im Status `Prüfen` gecheckt werden, ob alles passt. Ist das der Fall, kann das kästchen für den Spender erneut angeklickt werden und auf "Ausgewählte Geprüft" geklickt werden. Für diese Spender ist der Prozess nun abgeschlossen.
+
+Sollten sich Fehler in den Daten befinden, müssen diese über SevDesk korrigiert und dann erneut, wie oben beschrieben neu Importiert werden. dazu können die einzelnen Spender ausgewählt und gelöscht werden.
+
+**WICHTIG** Das löscht nicht die Daten in SevDesk sondern nur in diesem Tool. Die Daten können immer wieder neu aus SevDesk importiert werden.
+
+Aktuell werden dabei alle Elemente überschrieben egal, was für einen Status sie bereits erreicht haben. Das kann sich in der Zukunft ändern, sollte das gewünscht sein.
+
+## Fehlerbehebung
+
+Sollten Fehler auftreten ist in der Benuteroberfläche die Email-Adresse und eine Telefonnummer zu finden. Bei Fragen am besten per WhatsApp oder Mail. Bei ganz dringenden Fällen anrufen.
+
+Bei Wünschen zur erweiterung oder veränderung von Funktionen oder Aussehen gerne auch per Mail oder über ein [Issue](https://github.com/ScheerleJo/SevDeskServer/issues) auf Github
+
+## Developer
+
+<img src="https://avatars.githubusercontent.com/ScheerleJo" height="50px" title="Josia Scheerle"/> | [`@ScheerleJo`](https://github.com/ScheerleJo)
