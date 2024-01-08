@@ -81,36 +81,23 @@ function deleteItemAtIndex(deleteInfo) {
     if(deleteAll) {
         return [];
     }
-    if (!donationIndex) {
+    if (!donationIndex || data[donatorIndex].Donations.length == 1) {
         //delete whole donator
-        data.splice(donatorIndex, 1);
-        return data
-    } else {
-        //delete only single Donation
-        if (data[donatorIndex].Donations.length == 1 ) {
-            //delete whole donator
+        try {
             data.splice(donatorIndex, 1);
             return data
+        } catch(error) {
+            console.error(error);
+            return 400;
         }
-        else {
+    } else {
+        //delete only single Donation
+        try {
             data[donatorIndex].Donations.splice(donationIndex, 1);
             return data;
+        } catch(error){
+            console.error(error);
+            return 400;
         }
     }
-}
-
-
-/**
- * Walk thru the given array and delete elements that only have 'null' as value 
- * @param {Array<JSON>} array
- * @returns {Array<JSON>} compactedArray
- */
-function compactArray(array) {
-    let newArray = [];
-    for (let i = 0; i < array.length; i++) {
-        if(array[i] != null) {
-            newArray.push(array[i]);
-        }
-    }
-    return newArray;
 }
