@@ -1,15 +1,14 @@
 {
-  "name": "sevdesk-donation-certificate",
-  "version": "0.1.1",
+  "name": "sevdesk-extension-donation-certificate",
+  "version": "1.0.0",
   "description": "A tool to automatically create Donation-Certificates depending on the data from SevDesk",
   "main": "index.js",
   "scripts": {
-    "test": "run dev",
     "start": "node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ScheerleJo/SevDeskDonations.git"
+    "url": "https://github.com/ScheerleJo/SevDeskServer.git"
   },
   "keywords": [
     "SevDesk",
@@ -19,9 +18,9 @@
   "author": "ScheerleJo",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ScheerleJo/SevDeskDonations/issues"
+    "url": "https://github.com/ScheerleJo/SevDeskServer/issues"
   },
-  "homepage": "https://github.com/ScheerleJo/SevDeskDonations#readme",
+  "homepage": "https://github.com/ScheerleJo/SevDeskServer#readme",
   "dependencies": {
     "axios": "^1.4.0",
     "config": "^3.3.9",
@@ -31,6 +30,20 @@
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
     "num-words-de": "^1.1.0",
+    "os": "^0.1.2",
+    "path": "^0.12.7",
+    "pkg": "^5.8.1",
     "url-parse": "^1.5.10"
+  }, 
+  "bin": {
+    "SevDeskServer": "./index.js"
+  },
+  "pkg": {
+    "assets": [ 
+      "scripts/**/*"
+    ],
+    "targets": [
+      "node16-win-x64"
+    ]
   }
 }
