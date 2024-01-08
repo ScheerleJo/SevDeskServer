@@ -1,10 +1,11 @@
-const config = require('./configHandling')
-const requests = require('./requests');
-const formatting = require('./formatting');
-const sort = require('./sorting');
-const fileHandler = require('./fileHandling');
-const urlHandler = require('./urlHandling');
-const out = require('./output');
+const config = require('./scripts/configHandling')
+const requests = require('./scripts/requests');
+const formatting = require('./scripts/formatting');
+const sort = require('./scripts/sorting');
+const fileHandler = require('./scripts/fileHandling');
+const urlHandler = require('./scripts/urlHandling');
+const out = require('./scripts/output');
+
 const process = require('node:process');
 const express = require('express');
 const cors = require('cors');
@@ -34,15 +35,25 @@ if (loadedData != undefined) {
 
 app.get('/', (req, res) => {
     res.send({
-        "status": "running",
-        "message": "Invalid Branch. Use '/getDonations?year=...' to get all Donations to the input year Use '/saveData?data=...' to save the input Data to a json file"
-});
+        "Status": "running",
+        "Message": "Invalid Branch. Use '/fetchNew?year=...' to get all Donations to the input year Use '/saveData?data=...' to save the input Data to a json file"
+    });
 });
 app.get('/kill', (req, res) => {
     console.log('The Server will Shutdown with ExitCode 1');
-    res.send({"status":"shutdown"});
+    res.send({"Status":"shutdown"});
     process.exit()
 });
+
+app.get('/saveToken', (req,res) => {
+    let token = urlHandler.getToken(req.url);
+    console.log(token);
+    fileHandler.writeDotEnvToken(token);
+    res.send({
+        "Status": 200
+    })
+})
+
 app.get('/fetchNew', (req, res) => {
     year = urlHandler.getYearFromQuery(req.url)
     requests.getDonations(year, () => {
@@ -63,7 +74,8 @@ app.get('/fetchNew', (req, res) => {
 
 app.get('/saveData', (req, res) => {
     let response = fileHandler.saveStatusToFile(donationData, year);
-    res.send({"status": response});     //  Send Status Code (200 for everything okay)
+    res.send({"Status": response});     //  Send Status Code (200 for everything okay)
+    console.log('SAVE-DATA STATUS: ' + response)
 });
 app.get('/loadData', (req, res) => {
     res.send({
@@ -78,23 +90,33 @@ app.get('/deleteItem', (req, res) => { ///deleteItem?donatorIndex=...(num)&donat
     donationData = sort.deleteItemAtIndex(urlHandler.getDeleteItem(req.url));
     res.send(donationData);
 });
-app.get('/updateStatuses', (req, res) => {
-    
+app.get('/moveItem', (req, res) => {
+    sort.setDonationData(donationData);
+    let index = urlHandler.getMoveItem(req.url);
+    if(donationData[index].Status != 2) donationData[index].Status ++;
+    res.send(donationData);
 })
 
 app.get('/createLatex', (req, res) => {
     out.setYear(year);
-    out.setData(donationData);
+    let latexElements = [];
+    for(let i = 0; i < donationData.length; i++) {
+        if(donationData[i].Status == 1) {
+            latexElements.push(donationData[i]);
+        }
+    }
+    out.setData(latexElements);
     let output = out.createTexDoc();
     let success = fileHandler.writeTexDoc(output);
-    if (success != 200){
-        res.send(success);
-    }
-    else {
-        res.send({"status":"LaTeX File Created Successfully!"})
+    if (success != 200) res.send(success); 
+    else  {
+        res.send({
+            "Status": 200,
+            "response": "LaTeX File Created Successfully!"
+        })
+        console.log("LaTeX-FILE SUCCESSFULL CREATED")
     }
 });
-
 
 app.listen(PORT, function(){  
     console.log(`Server running on Port ${PORT}`);
