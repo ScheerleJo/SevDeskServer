@@ -1,6 +1,6 @@
 {
   "name": "sevdesk-extension-donation-certificate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A tool to automatically create Donation-Certificates depending on the data from SevDesk",
   "main": "index.js",
   "scripts": {
