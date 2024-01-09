@@ -1,6 +1,6 @@
 {
     "application": {
-        "server-version": "v1.0.0"
+        "server-version": "v1.0.1"
     },
     "server": {
         "port": 8040

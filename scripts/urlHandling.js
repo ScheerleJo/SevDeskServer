@@ -54,6 +54,5 @@ function getMoveItem(url) {
  * @returns {String} API-Token from SevDesk;
  */
 function getToken(url) {
-    console.log(url)
     return parseUrl(url, true).query.token;
 }
