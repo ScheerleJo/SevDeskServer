@@ -82,7 +82,7 @@ function getTexData(filename) {
 }
 
 function writeDotEnvToken(token) {
-    let filePath = path.resolve(process.cwd(), ".env")
+    let filePath = path.resolve(__dirname, ".env")
     let vars = ['API_TOKEN = ' + token];
     fs.writeFileSync(filePath, vars.join(os.EOL));
 
