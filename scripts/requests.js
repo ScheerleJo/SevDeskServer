@@ -1,6 +1,5 @@
 DocumentType = module;
 const axios = require('axios');
-require('dotenv').config();
 
 let responseData = 'Hello, i am Data'
 let addressData = 'Hello, i am Data'
@@ -14,9 +13,12 @@ module.exports = {
 
 
 async function makeSevDeskRequest(type, querystring) {
+    require('dotenv').config();
+    let token = process.env.API_TOKEN;
+    console.log(token);
     baseUrl = 'https://my.sevdesk.de/api/v1/';
     let req = baseUrl + querystring;
-    let config =  { headers:{'Authorization': process.env.API_TOKEN } }
+    let config =  { headers:{'Authorization': token } }
     let response;
     if(type == 'GET'){
         response = await axios.get(req, config).catch((error) => {
