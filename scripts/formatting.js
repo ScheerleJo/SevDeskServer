@@ -6,7 +6,6 @@ module.exports = {
     setDonationData,
     setAddressData,
     newFormat,
-    formatDate,
 }
 let sortedData = [];
 let addresses = [];
@@ -72,7 +71,7 @@ function getNextDonator(element) {
     if (address !== undefined) {
         return {
                 "Status": 0,
-                "CustomerNumber": handleElement(element.supplier.customerNumber),
+                "CustomerNumber": (element.supplier.customerNumber).trim(),
                 "AcademicTitle": element.supplier.academicTitle == null ? "" : element.supplier.academicTitle,
                 "Surename": element.supplier.surename == null ? element.supplier.name: element.supplier.surename,
                 "Familyname": element.supplier.familyname == null ? "": element.supplier.familyname,
@@ -84,17 +83,16 @@ function getNextDonator(element) {
                 "Donations": []
             }
     }
-    console.log(`Information Error: No matching Address was returned at ID ${element.supplier.id}! At output.js:83`);
+    console.log(`Information Error: No matching Address was returned at ID ${element.supplier.id}! At output.js:68`);
 
 }
-function getNextDonation(element) {             //! Hardcoded, pls change in future
+function getNextDonation(element) {
     totalSum += parseFloat(element.sumNet);
     return {
-        "Date": formatDate(element.voucherDate),
+        "Date": new Date(element.voucherDate).toLocaleDateString('de-DE'),
         "Type": "Geldzuwendung",
         "Waive": "nein",
         "Sum": correctSum(element.sumNet),
-        // "SumInWords": convertNumToWord(element.sumNet)
     }
 }
 
@@ -119,30 +117,13 @@ function getDonatorErrorData (element) {
 
 
 function convertNumToWord(num_f) {
-    if (num_f % 1 == 0){
-        return num2words.numToWord(num_f);
-    }
-    let num_format = Number(num_f).toFixed(2);
-    let split = (num_format + '').split('.');
-    let retValue;
-    if(split[0] == 0 ) {
-        retValue = num2words.numToWord(split[1], {indefinite_ein:true}) + ' Cent'; 
-    } else {
-        retValue = num2words.numToWord(split[0], {indefinite_ein:true}) + ' Euro ' + num2words.numToWord(split[1], {indefinite_ein:true}); // + " Cent";
-    }
-    return retValue;
-
+    let euro = num2words.numToWord(parseInt(num_f), {indefinite_ein:true})
+    let cent =  num2words.numToWord((num_f % 1).toFixed(2).substring(2), {indefinite_ein:true});
+    
+    if (num_f < 1) return cent + ' Cent';
+    else if (num_f % 1 == 0) return euro;
+    return euro + ' Euro ' +  cent;
 }
-function handleElement(element) {
-    element = element.trim();
-    return element;
-}
-
-function formatDate(date) {
-    let formattedDate = new Date(date);
-    return `${formattedDate.getDate()}.${formattedDate.getMonth() + 1}.${formattedDate.getFullYear()}`
-}
-
 
 function getAddressForContact(id) {
     for (let i = 0; i < addresses.length; i++){
@@ -161,12 +142,9 @@ function getAddressForContact(id) {
 
 
 function correctSum(sum_f){
-    let sum_s;
-    if(sum_f % 1 == 0) {                               // Check for Decimals
-        sum_s = sum_f + ',00 €';
-    } else {                             
-        let temp = Number(sum_f).toFixed(2);           // Format to 2-Decimal-Digits
-        sum_s = temp.replace('.', ',') + ' €';         // Format to correct German Euro-Format
+    if (typeof sum_f == 'string') {
+        sum_f = parseFloat(sum_f);
     }
-    return sum_s;
+    return sum_f.toLocaleString('de-DE', { style: 'currency',  currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2});
+    // console.error("Value: " + sum_f + ", DataTye: " + typeof sum_f + ", Corrected: " + sum_f.toLocaleString('de-DE', { style: 'currency',  currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2}));
 }

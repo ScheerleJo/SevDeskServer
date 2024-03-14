@@ -32,18 +32,9 @@
     "num-words-de": "^1.1.0",
     "os": "^0.1.2",
     "path": "^0.12.7",
-    "pkg": "^5.8.1",
     "url-parse": "^1.5.10"
-  }, 
-  "bin": {
-    "SevDeskServer": "./index.js"
   },
-  "pkg": {
-    "assets": [ 
-      "scripts/**/*"
-    ],
-    "targets": [
-      "node16-win-x64"
-    ]
+  "devDependencies": {
+    "typescript": "^5.4.2"
   }
 }

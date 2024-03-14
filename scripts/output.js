@@ -34,13 +34,12 @@ function createDonationOneLiner(donatorData) {
 }
 function createTexDoc() {
     let header = fileHandler.getTexData('header.tex');
-    let footer = fileHandler.getTexData('footer.tex');
     let block = '';
     for(let i = 0; i < formattedData.length; i++){
         const element = formattedData[i];
         block += createLetter(element);
     }
-    let documentData = header + block + footer;
+    let documentData = header + block + '\\end{document}';
     return documentData;
 }
 
