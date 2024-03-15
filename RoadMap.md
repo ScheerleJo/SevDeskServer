@@ -20,9 +20,14 @@
 
 - LATER:
   - [ ] code the possibility to set tags in Sevdesk and pull these to check whether a Donation-Certificate has been created
-  - [ ] Change Donations per Donator to correct order (switch around)
-  - [ ] Change Address handling. Dont create a separate Object for single use... Dont be stupid Josia
-  - [ ] Refactor and Cleanup
+  - [x] Change Donations per Donator to correct order (switch around)
+  - [x] Change Address handling. Dont create a separate Object for single use... Dont be stupid Josia
+  - Refactor and Cleanup
+    - [x] formatting
+    - [ ] config
+    - [ ] fileHandling
+    - [ ] output
+    - [ ] requests
     <!-- - [ ] manage LaTeX files as PDF(Save to local Machine/send via mail/send via letter at sevdesk or other) -->
 
 ## Frontend
@@ -45,6 +50,9 @@
   - [x] Select all Donators at the Same Time
   - [x] only show Status speficic listings
   - [x] create ErrorListing for Entries without a customernumber with ID, supplierAtSave, date; (Create a DonationTable aswell)
+
+  - [ ] Move Frontend to more suitable Framework
+  - [ ] Move code to Rust
 
 ## Extras
 

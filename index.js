@@ -85,9 +85,12 @@ app.get('/loadData', (req, res) => {
 
 app.get('/deleteItem', (req, res) => { ///deleteItem?donatorIndex=...(num)&donationIndex=...(num)&deleteAll=...(true/false)
     sort.setDonationData(donationData);
-    
-    donationData = sort.deleteItemAtIndex(urlHandler.getDeleteItem(req.url));
-    res.send(donationData);
+    let returnValue = sort.deleteItemAtIndex(urlHandler.getDeleteItem(req.url))
+    if (returnValue == 400) res.send({"Status": 400, "response": "Error while deleting Item"}); 
+    else {
+        donationData = returnValue;
+        res.send(donationData);
+    }
 });
 app.get('/moveItem', (req, res) => {
     sort.setDonationData(donationData);
