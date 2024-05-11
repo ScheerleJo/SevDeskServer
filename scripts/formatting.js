@@ -6,7 +6,6 @@ module.exports = {
     setDonationData,
     setAddressData,
     newFormat,
-    formatDate,
 }
 let sortedData = [];
 let addresses = [];
@@ -27,83 +26,75 @@ function setAddressData(APIData) {
  */
 function newFormat (){
     let len = sortedData.length;
-    let thinnedData = [];
-    let donatorData = {};
+    let donatorData;
     let lastCustomerNumber = 0;
-
-    for(let i = 0; i < len; i++) {
+    let i = 0;
+    while(i < len) {
         const element = sortedData[i];
-        let customerNumber = undefined
         try {
-            customerNumber = parseInt(element.supplier.customerNumber);
+            let customerNumber = parseInt(element.supplier.customerNumber);
+            if (lastCustomerNumber != customerNumber){
+                lastCustomerNumber = customerNumber;
+                finalizeDonator(donatorData, i)
+                donatorData = getNextDonator(element);
+                i++;
+            } else {
+                sortedData.splice(i, 1);
+                len--;
+            }
         } catch (error) {
-            console.log('CustomerNumber not found at Item ' + i);
+            console.error('CustomerNumber not found at Item ' + i + ' with ID: ' + element.id);
+            finalizeDonator(donatorData, i);
+            donatorData = getDonatorErrorData(element);
+            i++;
         }
-        if(customerNumber === undefined) {
-            if(donatorData != {}) {
-                donatorData.TotalSum = correctSum(totalSum);
-                console.log("CN:" + donatorData.CustomerNumber + " Sum: " + donatorData.TotalSum)
-                donatorData.SumInWords = convertNumToWord(totalSum);
-                thinnedData.push(donatorData);
-            }
-            //Set DonatorData to Error with some Information of the Voucher
-            donatorData = getDonatorErrorData(element)
-        } else if (customerNumber != lastCustomerNumber){
-            //check for new customerNumber to set a new Donator
-            lastCustomerNumber = customerNumber;
-            if(i != 0) { // Prevents from Pushing an empty first Object
-                donatorData.TotalSum = correctSum(totalSum);
-                donatorData.SumInWords = convertNumToWord(totalSum);
-                thinnedData.push(donatorData);
-            }
-            //Create new Donator Scheme
-            donatorData = getNextDonator(element);
-        }
-        //add Donation
-        donatorData.Donations.push(getNextDonation(element))
+        donatorData.Donations.unshift(getNextDonation(element))
     }
-    return thinnedData;
+    finalizeDonator(donatorData, i)
+    return sortedData;
+}
+
+function finalizeDonator(donatorData, i) {                
+    if (donatorData) {
+        donatorData.TotalSum = correctSum(totalSum);
+        donatorData.SumInWords = convertNumToWord(totalSum);
+        sortedData[i - 1] = donatorData;
+    }
 }
 
 
 function getNextDonator(element) {
     totalSum = 0;
-    let address = getAddressForContact(element.supplier.id) || undefined;
-    if (address !== undefined) {
-        return {
-                "Status": 0,
-                "CustomerNumber": handleElement(element.supplier.customerNumber),
-                "AcademicTitle": element.supplier.academicTitle == null ? "" : element.supplier.academicTitle,
-                "Surename": element.supplier.surename == null ? element.supplier.name: element.supplier.surename,
-                "Familyname": element.supplier.familyname == null ? "": element.supplier.familyname,
-                "Street": (address.Street + '').trim(),
-                "ZipCity": `${address.Zip} ${address.City}`.trim(),
-                "Country": address.Country,
-                "TotalSum": 0,
-                "SumInWords": "",
-                "Donations": []
-            }
+    let address = getAddressForContact(element.supplier.id) || false;
+    return {
+        "Status": 0,
+        "CustomerNumber": (element.supplier.customerNumber).trim(),
+        "AcademicTitle": (element.supplier.academicTitle == null ? "" : element.supplier.academicTitle.trim()),
+        "Surename": (element.supplier.surename == null ? element.supplier.name: element.supplier.surename.trim()),
+        "Familyname": (element.supplier.familyname == null ? "": element.supplier.familyname.trim()),
+        "Street": (!address ? '' : address.street + '').trim(),
+        "ZipCity": !address ? '' : `${address.zip} ${address.city}`.trim(),
+        "Country": (!address ? '' : address.country.name).trim(),
+        "TotalSum": 0,
+        "SumInWords": "",
+        "Donations": [],
+        "ID": element.supplier.id
     }
-    console.log(`Information Error: No matching Address was returned at ID ${element.supplier.id}! At output.js:83`);
-
 }
-function getNextDonation(element) {             //! Hardcoded, pls change in future
+function getNextDonation(element) {
     totalSum += parseFloat(element.sumNet);
     return {
-        "Date": formatDate(element.voucherDate),
+        "Date": new Date(element.voucherDate).toLocaleDateString('de-DE'),
         "Type": "Geldzuwendung",
         "Waive": "nein",
         "Sum": correctSum(element.sumNet),
-        // "SumInWords": convertNumToWord(element.sumNet)
+        "ID": element.id
     }
 }
 
 function getDonatorErrorData (element) {
-    let name = element.supplierName.split(" ");
-    let surename = '', familyname = '';
-    for (let j = 0; j < (name.length - 1); j++) {
-        surename += ` ${familyname[j]}`;
-    } 
+    let familyname = element.supplierName.split(" ")[element.supplierName.split(" ").length - 1];
+    let surename = element.supplierName.replace(' ' + familyname, '');
     return {
         "Status": 0,
         "CustomerNumber": "Error, keine Kdnr registriert",
@@ -113,60 +104,35 @@ function getDonatorErrorData (element) {
         "Street": "",
         "ZipCity": "",
         "TotalSum": correctSum(element.sumNet),
-        "Donations": []
+        "Donations": [],
+        "ID": element.supplier ? element.supplier.id : ''
     }
 }
-
 
 function convertNumToWord(num_f) {
-    if (num_f % 1 == 0){
-        return num2words.numToWord(num_f);
-    }
-    let num_format = Number(num_f).toFixed(2);
-    let split = (num_format + '').split('.');
-    let retValue;
-    if(split[0] == 0 ) {
-        retValue = num2words.numToWord(split[1], {indefinite_ein:true}) + ' Cent'; 
-    } else {
-        retValue = num2words.numToWord(split[0], {indefinite_ein:true}) + ' Euro ' + num2words.numToWord(split[1], {indefinite_ein:true}); // + " Cent";
-    }
-    return retValue;
-
+    let euro = num2words.numToWord(parseInt(num_f), {indefinite_ein:true});
+    let cent =  num2words.numToWord((num_f % 1).toFixed(2).substring(2), {indefinite_ein:true});
+    if (num_f < 1) return cent + ' Cent';
+    else if (num_f % 1 == 0) return euro;
+    return euro + ' Euro ' +  cent;
 }
-function handleElement(element) {
-    element = element.trim();
-    return element;
-}
-
-function formatDate(date) {
-    let formattedDate = new Date(date);
-    return `${formattedDate.getDate()}.${formattedDate.getMonth() + 1}.${formattedDate.getFullYear()}`
-}
-
 
 function getAddressForContact(id) {
     for (let i = 0; i < addresses.length; i++){
-        if(addresses[i].contact.id == id) {
+        if(addresses[i].contact.id == id){
             const address = addresses[i];
-            return {
-                "Street": address.street,
-                "Zip": address.zip,
-                "City": address.city,
-                "Country": address.country.name,
+            if(address && (!address.street || !address.zip || !address.city || !address.country.name)){
+                console.warn(`Information Warning: Address with ID ${address.id} is incomplete!`);
             }
+            return address;
         }
     }
-    console.log(`Information Error: No matching Address found at ID ${id}! At output.js:144`);
+    console.error(`Information Error: No matching Address found at ID ${id}!`);
 }
 
 
 function correctSum(sum_f){
-    let sum_s;
-    if(sum_f % 1 == 0) {                               // Check for Decimals
-        sum_s = sum_f + ',00 €';
-    } else {                             
-        let temp = Number(sum_f).toFixed(2);           // Format to 2-Decimal-Digits
-        sum_s = temp.replace('.', ',') + ' €';         // Format to correct German Euro-Format
-    }
-    return sum_s;
+    if (typeof sum_f == 'string') sum_f = parseFloat(sum_f);
+    return sum_f.toLocaleString('de-DE', { style: 'currency',  currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2});
+    // console.error("Value: " + sum_f + ", DataTye: " + typeof sum_f + ", Corrected: " + sum_f.toLocaleString('de-DE', { style: 'currency',  currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2}));
 }

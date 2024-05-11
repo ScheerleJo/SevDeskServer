@@ -7,7 +7,8 @@ module.exports = {
     getYearFromQuery,
     getDeleteItem,
     getMoveItem,
-    getToken
+    getToken,
+    getReloadUsers
 }
 
 
@@ -29,7 +30,7 @@ function getYearFromQuery(url) {
 function getDeleteItem(url) {
     let deleteInfo = parseUrl(url, true).query;
     if(deleteInfo.donatorIndex == undefined) {
-        return console.error('Error at /deleteItem Request!\nNo donator was specified to delete.\n\n Error was thrown at `urlHandling.js:36`');
+        return console.error('Error at /deleteItem Request!\nNo donator was specified to delete.\n\n Error was thrown at `urlHandling.js:33`');
     }
     if(deleteInfo.donationIndex == undefined) {
         deleteInfo.donationIndex = false;
@@ -55,4 +56,8 @@ function getMoveItem(url) {
  */
 function getToken(url) {
     return parseUrl(url, true).query.token;
+}
+
+function getReloadUsers(url) {
+    parseUrl(url, true).query.split('-');
 }
