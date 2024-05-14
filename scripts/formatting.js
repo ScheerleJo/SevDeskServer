@@ -102,7 +102,8 @@ function getDonatorErrorData (element) {
         "Street": "",
         "ZipCity": "",
         "TotalSum": correctSum(element.sumNet),
-        "Donations": []
+        "Donations": [],
+        "ID": element.supplier ? element.supplier.id : ''
     }
 }
 

@@ -4,7 +4,7 @@ Ein Tool um automatisch Spendenbescheinigungen zu Generieren. Dazu werden Daten 
 
 ## Simple structure
 
-Standardmäßig werden innerhalb von einem Gerät Befehlen auf dem Localhost 127.0.0.1:8040 gesendet. Sollte dieser belegt oder aus anderen Gründen nicht benuztbar sein bitte melden.
+Standardmäßig werden innerhalb von einem Gerät Befehlen auf dem Localhost mit Port 8040 gesendet. Sollte dieser belegt oder aus anderen Gründen nicht benuztbar sein bitte melden.
 
 ### Backend
 
@@ -32,15 +32,15 @@ Da der Webserver, welcher im Hintergrund läuft noch ein Work in Progress ist, i
 4. In dem dem Ordner `SevDeskServer-*Version*` muss nun die Konsole geöffnet werden. Das funktioniert in Windows mit gedrückter Shift-Taste und einen Rechtsklick auf den Ordner. In dem erweiterten Menü kann man nun `Eingabeaufforderung hier öffnen` auswählen. Diese öffnet sich anschließend.
 5. Wenn die Konsole geöffnet ist, muss folgender Befehl eingegeben werden, um alle Abhängikeiten herunterzuladen:
 
-``` PowerShell
-> npm install
-```
+    ``` PowerShell
+    > npm install
+    ```
 
 6. Nun kann der Server ausgeführt werden. Dazu einfach auf den folgenden Befehl in die Konsole eingeben:
 
-``` PowerShell
-> npm run start
-```
+    ``` PowerShell
+    > npm run start
+    ```
 
 Anschließend zeigt die Konsole Text an, dass der Server auf Port 8040 läuft.
 
@@ -103,7 +103,7 @@ Aktuell werden dabei alle Elemente überschrieben egal, was für einen Status si
 
 Sollten Fehler auftreten ist in der Benuteroberfläche die Email-Adresse und eine Telefonnummer zu finden. Bei Fragen am besten per WhatsApp oder Mail. Bei ganz dringenden Fällen anrufen.
 
-Bei Wünschen zur erweiterung oder veränderung von Funktionen oder Aussehen gerne auch per Mail oder über ein [Issue](https://github.com/ScheerleJo/SevDeskServer/issues) auf Github
+Bei Wünschen zur Erweiterung oder veränderung von Funktionen oder Aussehen gerne auch per Mail oder über ein [Issue](https://github.com/ScheerleJo/SevDeskServer/issues) auf Github.
 
 ## Developer
 

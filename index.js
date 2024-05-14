@@ -120,6 +120,11 @@ app.get('/createLatex', (req, res) => {
     }
 });
 
+app.get('/reloadUsers', (req, res) =>{
+    let users = urlHandler.getReloadUsers(req.url);
+
+})
+
 app.listen(PORT, function(){  
     console.log(`Server running on Port ${PORT}`);
 });

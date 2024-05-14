@@ -20,6 +20,7 @@ module.exports = {
  * @returns {string} filePath of selectedDataSafe
  */
 function getFilePath(reqAction){
+
     let filePath = config.getSaveDataPath();
     filePath = __dirname + "\\data.json"
     // if(path == "") {
@@ -39,10 +40,10 @@ function saveStatusToFile(arrayData, year) {
     let json = JSON.stringify(data);
     try {
         fs.writeFileSync(filePath, json);
+        return 200;
     } catch (error) {
         return error;
     }
-    return 200;
 }
 
 function loadStatusFromFile() {
@@ -68,10 +69,10 @@ function writeTexDoc(data) {
     } while(fs.existsSync(filePath));
     try {
         fs.writeFileSync(filePath, data);
+        return 200;
     } catch (error) {
         return error;
     }
-    return 200;
 }
 
 function getTexData(filename) {

@@ -6,6 +6,7 @@ let addressData = 'Hello, i am Data'
 
 module.exports = {
     getDonations,
+    getUserSpecificDonations,
     getData,
     getAddressData,
     getAllAddresses
