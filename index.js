@@ -1,10 +1,9 @@
-const config = require('./scripts/configHandling')
-const requests = require('./scripts/requests');
-const formatting = require('./scripts/formatting');
+const config = require('./scripts/configHandling');
 const sort = require('./scripts/sorting');
 const fileHandler = require('./scripts/fileHandling');
 const urlHandler = require('./scripts/urlHandling');
 const out = require('./scripts/output');
+const func = require('./scripts/functionHandling');
 
 const process = require('node:process');
 const express = require('express');
@@ -26,7 +25,7 @@ let corsOptions = {
 // Options for the FrontEnd to function properly
 app.use(cors(corsOptions));
 let donationData, year;
-let loadedData =  fileHandler.loadStatusFromFile();
+let loadedData = fileHandler.loadStatusFromFile();
 
 if (loadedData != undefined) {
     donationData = loadedData.Data;
@@ -54,21 +53,10 @@ app.get('/saveToken', (req,res) => {
 })
 
 app.get('/fetchNew', (req, res) => {
-    year = urlHandler.getYearFromQuery(req.url)
-    requests.getDonations(year, () => {
-        console.log('DATA GATHERING (Donations) COMPLETE')
-        formatting.setDonationData(requests.getData());
-        requests.getAllAddresses(() => {
-            console.log('DATA GATHERING (Addresses) COMPLETE')
-            formatting.setAddressData(requests.getAddressData());
-            donationData = formatting.newFormat();
-            console.log('DATA PUSHED SUCCESSFULLY');
-            res.send({
-                "Year": year,
-                "Data": donationData
-            });
-        })
-    })
+    func.fetchNew(req).then((data) => {
+        donationData = data.Data;
+        res.send(data);
+    });
 })
 
 app.get('/saveData', (req, res) => {
@@ -85,7 +73,7 @@ app.get('/loadData', (req, res) => {
 
 app.get('/deleteItem', (req, res) => { ///deleteItem?donatorIndex=...(num)&donationIndex=...(num)&deleteAll=...(true/false)
     sort.setDonationData(donationData);
-    let returnValue = sort.deleteItemAtIndex(urlHandler.getDeleteItem(req.url))
+    let returnValue = sort.deleteItemAtUserID(urlHandler.getMultipleUserIDs(req.url))
     if (returnValue == 400) res.send({"Status": 400, "response": "Error while deleting Item"}); 
     else {
         donationData = returnValue;
@@ -103,9 +91,7 @@ app.get('/createLatex', (req, res) => {
     out.setYear(year);
     let latexElements = [];
     for(let i = 0; i < donationData.length; i++) {
-        if(donationData[i].Status == 1) {
-            latexElements.push(donationData[i]);
-        }
+        if(donationData[i].Status == 1) latexElements.push(donationData[i]);
     }
     out.setData(latexElements);
     let output = out.createTexDoc();
@@ -120,9 +106,11 @@ app.get('/createLatex', (req, res) => {
     }
 });
 
-app.get('/reloadUsers', (req, res) =>{
-    let users = urlHandler.getReloadUsers(req.url);
-
+app.get('/refetchUsers', (req, res) => {
+    oldData = donationData;
+    func.refetchUsers(req, year, donationData).then((data) => {
+        res.send(data);
+    })
 })
 
 app.listen(PORT, function(){  
