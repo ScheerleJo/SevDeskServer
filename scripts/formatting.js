@@ -7,16 +7,17 @@ module.exports = {
     setAddressData,
     newFormat,
 }
-let sortedData = [];
-let addresses = [];
-let totalSum = 0;
 
-function setDonationData (data) {
+var sortedData = [];
+var addresses = [];
+var totalSum = 0;
+
+function setDonationData(data) {
     sort.setDonationData(data.objects);
-    sortedData = sort.listDonationsPerUserID();
+    sortedData = sort.listDonationsPerCN();
 }
 function setAddressData(APIData) {
-    addresses = APIData.objects
+    addresses = APIData.objects;
 }
 
 /**
@@ -24,7 +25,7 @@ function setAddressData(APIData) {
  * Format = [[status, customernumber, title, firstName, lastName, streetNumber, postalCodeCity, donationSumAll, [['donationDate', 'type', 'description', 'donationSum', donationSumAsText], ...nextDonation], state],...nextUser]
  * @returns formattedData Array<String>
  */
-function newFormat (){
+function newFormat() {
     let len = sortedData.length;
     let donatorData;
     let lastCustomerNumber = 0;
@@ -62,21 +63,20 @@ function finalizeDonator(donatorData, i) {
     }
 }
 
-
 function getNextDonator(element) {
-    totalSum = 0;
     let address = getAddressForContact(element.supplier.id) || false;
     return {
+        "ID": element.supplier.id,
         "Status": 0,
-        "CustomerNumber": (element.supplier.customerNumber).trim(),
-        "AcademicTitle": (element.supplier.academicTitle == null ? "" : element.supplier.academicTitle.trim()),
-        "Surename": (element.supplier.surename == null ? element.supplier.name: element.supplier.surename.trim()),
+        "CustomerNumber":element.supplier.customerNumber.trim() || '',
+        "AcademicTitle": element.supplier.academicTitle.trim() || '',
+        "Surename": element.supplier.surename.trim() || '',
         "Familyname": (element.supplier.familyname == null ? "": element.supplier.familyname.trim()),
-        "Street": (!address ? '' : address.street + '').trim(),
+        "Street": address.street.trim() || '',
         "ZipCity": !address ? '' : `${address.zip} ${address.city}`.trim(),
-        "Country": (!address ? '' : address.country.name).trim(),
-        "TotalSum": 0,
-        "SumInWords": "",
+        "Country": address.country.name.trim() || '',
+        "TotalSum": totalSum = 0,
+        "SumInWords": '',
         "Donations": []
     }
 }
@@ -94,8 +94,9 @@ function getDonatorErrorData (element) {
     let familyname = element.supplierName.split(" ")[element.supplierName.split(" ").length - 1];
     let surename = element.supplierName.replace(' ' + familyname, '');
     return {
+        "ID": element.supplier.id  || '',
         "Status": 0,
-        "CustomerNumber": "Error, keine Kdnr registriert",
+        "CustomerNumber": "Error, keine Kdnr gefunden",
         "AcademicTitle": "",
         "Surename": surename,
         "Familyname": familyname[-1],
@@ -103,7 +104,6 @@ function getDonatorErrorData (element) {
         "ZipCity": "",
         "TotalSum": correctSum(element.sumNet),
         "Donations": [],
-        "ID": element.supplier ? element.supplier.id : ''
     }
 }
 
