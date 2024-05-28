@@ -17,6 +17,7 @@
 - [x] request to delete specific Item(s) in index.js
 - [x] save current Status
 - [x] If existent, load data from data.json automatically in server and wait for request in the table
+- [ ] create new formatting algorithm (same output just not sorted to customer Number (sorting will be done on the frontend))
 
 - LATER:
   - [ ] code the possibility to set tags in Sevdesk and pull these to check whether a Donation-Certificate has been created
@@ -50,9 +51,11 @@
   - [x] Select all Donators at the Same Time
   - [x] only show Status speficic listings
   - [x] create ErrorListing for Entries without a customernumber with ID, supplierAtSave, date; (Create a DonationTable aswell)
+  - [ ] sorting for different criterias (first only customer Number, later more)
 
   - [ ] Move Frontend to more suitable Framework
   - [ ] Move code to Rust
+  - [ ] Set SaveData Path in FileSaveDialog
 
 ## Extras
 
