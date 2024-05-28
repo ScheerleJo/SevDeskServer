@@ -14,32 +14,15 @@ module.exports = {
     writeDotEnvToken
 }
 
-/**
- * Gef File Path from Config of FileDialog
- * @param {string} reqAction ('save'/'load'/)
- * @returns {string} filePath of selectedDataSafe
- */
-function getFilePath(reqAction){
 
-    let filePath = config.getSaveDataPath();
-    filePath = __dirname + "\\data.json"
-    // if(path == "") {
-    //Open FileSaveDialog / FileOpenDialog in future
-    //}
-    return filePath;
-}
 
 function saveStatusToFile(arrayData, year) {
-    let filePath = getFilePath('save');
-
-    let data = {
+    let json = JSON.stringify({
         "Year": year,
         "Data": arrayData
-    }
-
-    let json = JSON.stringify(data);
+    });
     try {
-        fs.writeFileSync(filePath, json);
+        fs.writeFileSync(__dirname + "\\data.json", json);
         return 200;
     } catch (error) {
         return error;
@@ -47,13 +30,14 @@ function saveStatusToFile(arrayData, year) {
 }
 
 function loadStatusFromFile() {
-    let filePath = getFilePath('load');
+    let filePath = __dirname + "\\data.json";
     try {
         const data = fs.readFileSync(filePath ,
         { encoding: 'utf8', flag: 'r' });
+        console.log('last saved status loaded from: ' + filePath);
         return JSON.parse(data);
     } catch(error) {
-        console.log('No status could be loaded from: ' + filePath)
+        console.log('No status could be loaded from: ' + filePath);
         return undefined;
     }
 }
@@ -86,5 +70,4 @@ function writeDotEnvToken(token) {
     let filePath = path.resolve(process.cwd(), ".env")
     let vars = ['API_TOKEN = ' + token];
     fs.writeFileSync(filePath, vars.join(os.EOL));
-
 }

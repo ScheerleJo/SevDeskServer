@@ -4,60 +4,49 @@ const parseUrl = require('url-parse');
 
 
 module.exports = {
-    getYearFromQuery,
-    getDeleteItem,
+    getYear,
     getMoveItem,
     getToken,
-    getReloadUsers
+    getMultipleUserIDs
 }
-
 
 /**
  * Get Year from QueryParams
- * @param {url} url req.url of express.get()
+ * @param {URL} url req.url of express.get()
  * @returns {Number} year
  */
-function getYearFromQuery(url) {
+function getYear(url) {
     return parseUrl(url, true).query.year;
-}
-
-
-/**
- * Get QueryParams from '/deleteItem' request
- * @param {url} url
- * @returns {Array<String>} [DonatorIndex, DonationIndex, DeleteAll | false]
- */
-function getDeleteItem(url) {
-    let deleteInfo = parseUrl(url, true).query;
-    if(deleteInfo.donatorIndex == undefined) {
-        return console.error('Error at /deleteItem Request!\nNo donator was specified to delete.\n\n Error was thrown at `urlHandling.js:33`');
-    }
-    if(deleteInfo.donationIndex == undefined) {
-        deleteInfo.donationIndex = false;
-    }
-    if(deleteInfo.deleteAll == undefined){
-        deleteInfo.deleteAll = false;
-    }
-    return deleteInfo;
 }
 
 /**
  * Get donatorIndex from QueryParams
- * @param {url} url
+ * @param {URL} url Request URL from Express
  * @returns {Number} Index of Donator to Move the status;
  */
 function getMoveItem(url) {
     return parseUrl(url, true).query.donatorIndex;
 }
+
 /**
  * Get Token from QueryParams
- * @param {url} url
+ * @param {URL} url  Request URL from Express
  * @returns {String} API-Token from SevDesk;
  */
 function getToken(url) {
     return parseUrl(url, true).query.token;
 }
 
-function getReloadUsers(url) {
-    parseUrl(url, true).query.split('-');
+
+/**
+ * Get UserIDs from QueryParams in Form of '?ids=id1-id2-id3-...'
+ * @param {URL} url Request URL from Express
+ * @returns {Array<Number>}
+ */
+function getMultipleUserIDs(url) {
+    let ids = parseUrl(url, true).query.ids.split('-');
+    for(let i = 0; i < ids.length; i++) {
+        if(typeof(ids[i]) != "number") ids[i] = parseInt(ids[i]);
+    }
+    return ids;
 }
