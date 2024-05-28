@@ -1,23 +1,26 @@
 // Description: This file contains the sorting and deleting functions for the donations
 
-let data = [];
+var donationData = [];
 
 module.exports = {
     setDonationData,
-    listDonationsPerUserID,
-    deleteItemAtIndex
+    listDonationsPerCN,
+    filterUsersPerID,
+    deleteUserAtID,
+    getIndexesforUserID
 }
 
 function setDonationData(APIData) {
-    data = APIData;
+    donationData = APIData;
 }
 
 /**
  * sort all Donations from 'setData' by objects.supplier.customernumber & date from oldest to newest
  * @returns {Array<String>} Sorted donations
  */
-function listDonationsPerUserID() {
-    data.sort((a, b) => {
+function listDonationsPerCN(specificData = undefined) {
+    var activeData = specificData == undefined ? donationData : specificData;
+    activeData.sort((a, b) => {
         if (a.supplier.customerNumber > b.supplier.customerNumber || a.supplier.customerNumber == undefined) {
             return 1;
         } else if (a.supplier.customerNumber < b.supplier.customerNumber || b.supplier.customerNumber == undefined) {
@@ -25,40 +28,47 @@ function listDonationsPerUserID() {
         }
         return 0;
     });
-    return data;
+    return activeData;
+}
+
+function filterUsersPerID(data, IDs) {
+    let filteredData = [];
+    for (let i = 0; i < data.length; i++) {
+        if (IDs.includes(data[i].supplier.customerNumber)) {
+            filteredData.push(data[i]);
+        }
+    }
+    return filteredData;
+}
+
+function getIndexesforUserID(data, IDs) {
+    let indexes = [], index;
+    for (let i = 0; i < IDs.length; i++) {
+        index = -1;
+        data.find((item, j) => {
+            if(item.ID === IDs[i]) index = j;
+        });
+        indexes.push(index);
+    }
+    return indexes;
 }
 
 /**
  * Deletes the Item at the spcified Index. It is possible to delete Donators or Donations or clear the entire Array
- * @param {any} deleteInfo
+ * @param {Array<Number>} userID ID of the Donator from SevDesk
  * @returns {Array<JSON>} manipulated Array with deleted Item At Index
  */
-function deleteItemAtIndex(deleteInfo) {
-    let donatorIndex = deleteInfo.donatorIndex;
-    let donationIndex = deleteInfo.donationIndex;
-    let deleteAll = deleteInfo.deleteAll;
-    if(deleteAll) {
-        return [];
-    }
-    if (!donationIndex || data[donatorIndex].Donations.length == 1) {
-        //delete whole donator
+function deleteUserAtID(userID) {
+    let donatorIndexes = getIndexesforUserID(userID);
+    for(let i = 0; i < donatorIndexes.length; i++) {
         try {
-            data.splice(donatorIndex, 1);
-            return data
+            if(donatorIndexes[i] != -1) {
+                donationData.splice(donatorIndexes[i], 1);
+            } else throw ReferenceError('UserID could not be found');
         } catch(error) {
             console.error(error);
             return 400;
         }
-    } else if (!donatorIndex && !donationIndex && !deleteAll) {
-        return 400;
-    } else {
-        //delete only single Donation
-        try {
-            data[donatorIndex].Donations.splice(donationIndex, 1);
-            return data;
-        } catch(error){
-            console.error(error);
-            return 400;
-        }
     }
+    return donationData;
 }
