@@ -43,7 +43,6 @@ function loadStatusFromFile() {
 }
 
 function writeTexDoc(data) {
-
     let filePath;
     let inject = 0;
     do {

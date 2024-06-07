@@ -37,7 +37,6 @@ function getToken(url) {
     return parseUrl(url, true).query.token;
 }
 
-
 /**
  * Get UserIDs from QueryParams in Form of '?ids=id1-id2-id3-...'
  * @param {URL} url Request URL from Express

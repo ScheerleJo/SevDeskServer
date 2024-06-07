@@ -45,8 +45,7 @@ app.get('/kill', (req, res) => {
 });
 
 app.get('/saveToken', (req,res) => {
-    let token = urlHandler.getToken(req.url);
-    fileHandler.writeDotEnvToken(token);
+    fileHandler.writeDotEnvToken(urlHandler.getToken(req.url));
     res.send({
         "Status": 200
     })
