@@ -23,6 +23,7 @@
   - [ ] code the possibility to set tags in Sevdesk and pull these to check whether a Donation-Certificate has been created
   - [x] Change Donations per Donator to correct order (switch around)
   - [x] Change Address handling. Dont create a separate Object for single use... Dont be stupid Josia
+  - [ ] Change Address search to more efficient Way
   - Refactor and Cleanup
     - [x] formatting
     - [ ] config
@@ -60,7 +61,7 @@
 ## Extras
 
 - [x] create LaTeX-Template
-- [x] create Documentation
+- [ ] create Documentation
 - [ ] create Executable for Server
 - [ ] create Documentation for Frontend
 
