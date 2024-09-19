@@ -1,7 +1,6 @@
 DocumentType = module;
 const num2words = require('num-words-de');
 const template = require('./template');
-const { get } = require('config');
 
 module.exports = {
     setDonationData,
@@ -65,7 +64,7 @@ function finalizeDonator(donatorData, i) {
 }
 
 function getNextDonator(element) {
-    let newDonator = template.newDonator;
+    let newDonator = template.newDonator();
     if(element.supplier) {
         newDonator.ID = element.supplier.id;
         newDonator.AcademicTitle = element.supplier.academicTitle || "";
@@ -84,7 +83,7 @@ function getNextDonator(element) {
 
 function getNextDonation(element) {
     totalSum += parseFloat(element.sumNet);
-    let newDonation = template.donation;
+    let newDonation = template.donation();
     newDonation.Date = new Date(element.voucherDate).toLocaleDateString('de-DE');
     newDonation.Sum = correctSum(element.sumNet);
     return newDonation;
@@ -107,7 +106,7 @@ function getAddressForContact(id) {
     }
     if(!found.street || !found.zip || !found.city || !found.country.name) console.warn(`Information Warning: Address with ID ${found.id} is incomplete!`);
     
-    let newAddress = template.address;
+    let newAddress = template.address();
     newAddress.Street = found.street || undefined;
     newAddress.Zip = found.zip || undefined;
     newAddress.City = found.city || undefined;

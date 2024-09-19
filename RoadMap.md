@@ -18,6 +18,7 @@
 - [x] save current Status
 - [x] If existent, load data from data.json automatically in server and wait for request in the table
 - [x] create new formatting algorithm (same output just not sorted to customer Number (sorting will be done on the frontend))
+- [ ] Fix naming for donators (if familyname and surename are empty -> check for element.supplier.name /element.supplier.name2)
 
 - LATER:
   - [ ] code the possibility to set tags in Sevdesk and pull these to check whether a Donation-Certificate has been created
