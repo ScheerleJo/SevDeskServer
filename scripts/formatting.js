@@ -1,20 +1,22 @@
 DocumentType = module;
 const num2words = require('num-words-de');
-const sort = require('./sorting');
+const template = require('./template');
+const { get } = require('config');
 
 module.exports = {
     setDonationData,
     setAddressData,
     newFormat,
+    getDonationsTotal
 }
 
 var sortedData = [];
 var addresses = [];
 var totalSum = 0;
+var allDonatorsSum = 0;
 
 function setDonationData(data) {
-    sort.setDonationData(data.objects);
-    sortedData = sort.listDonationsPerCN();
+    sortedData = data;
 }
 function setAddressData(APIData) {
     addresses = APIData.objects;
@@ -22,21 +24,21 @@ function setAddressData(APIData) {
 
 /**
  * Format the data sorted by this module to push to Frontend
- * Format = [[status, customernumber, title, firstName, lastName, streetNumber, postalCodeCity, donationSumAll, [['donationDate', 'type', 'description', 'donationSum', donationSumAsText], ...nextDonation], state],...nextUser]
- * @returns formattedData Array<String>
+ * Format = [[ID, status, title, firstName, lastName, [streetNumber, ZIP-Code, City, Country], donationTotalSum, [['donationDate', 'type', 'description', 'donationSum', donationSumAsText], ...nextDonation]],...nextUser]
+ * @returns formattedData Array<JSON>
  */
 function newFormat() {
     let len = sortedData.length;
     let donatorData;
-    let lastCustomerNumber = 0;
+    let lastDonatorID = 0;
     let i = 0;
     while(i < len) {
         const element = sortedData[i];
         try {
-            let customerNumber = parseInt(element.supplier.customerNumber);
-            if (lastCustomerNumber != customerNumber){
-                lastCustomerNumber = customerNumber;
-                finalizeDonator(donatorData, i)
+            let donatorID = parseInt(element.supplier.id);
+            if (lastDonatorID != donatorID){
+                lastDonatorID = donatorID;
+                if(donatorData) finalizeDonator(donatorData, i);
                 donatorData = getNextDonator(element);
                 i++;
             } else {
@@ -44,9 +46,9 @@ function newFormat() {
                 len--;
             }
         } catch (error) {
-            console.error('CustomerNumber not found at Item ' + i + ' with ID: ' + element.id);
-            finalizeDonator(donatorData, i);
-            donatorData = getDonatorErrorData(element);
+            console.error('ID not found at Item ' + i);
+            if(donatorData) finalizeDonator(donatorData, i);
+            donatorData = getNextDonator(element);
             i++;
         }
         donatorData.Donations.unshift(getNextDonation(element))
@@ -56,56 +58,38 @@ function newFormat() {
 }
 
 function finalizeDonator(donatorData, i) {                
-    if (donatorData) {
-        donatorData.TotalSum = correctSum(totalSum);
-        donatorData.SumInWords = convertNumToWord(totalSum);
-        sortedData[i] = donatorData;
-    }
+    donatorData.TotalSum = correctSum(totalSum);
+    donatorData.SumInWords = convertNumToWord(totalSum);
+    sortedData[i] = donatorData;
+    allDonatorsSum += totalSum;
 }
 
 function getNextDonator(element) {
-    let address = getAddressForContact(element.supplier.id) || false;
-    return {
-        "ID": element.supplier.id,
-        "Status": 0,
-        "CustomerNumber":element.supplier.customerNumber.trim() || '',
-        "AcademicTitle": element.supplier.academicTitle.trim() || '',
-        "Surename": element.supplier.surename.trim() || '',
-        "Familyname": (element.supplier.familyname == null ? "": element.supplier.familyname.trim()),
-        "Street": address.street.trim() || '',
-        "ZipCity": !address ? '' : `${address.zip} ${address.city}`.trim(),
-        "Country": address.country.name.trim() || '',
-        "TotalSum": totalSum = 0,
-        "SumInWords": '',
-        "Donations": []
+    let newDonator = template.newDonator;
+    if(element.supplier) {
+        newDonator.ID = element.supplier.id;
+        newDonator.AcademicTitle = element.supplier.academicTitle || "";
+        newDonator.Surename = element.supplier.surename;
+        newDonator.Familyname = element.supplier.familyname;
+        newDonator.Address = getAddressForContact(element.supplier.id);
+    } else {
+        let familyname = element.supplierName.split(" ")[element.supplierName.split(" ").length - 1];
+        newDonator.Surename = element.supplierName.replace(' ' + familyname, '') || "";
+        newDonator.Familyname = familyname[-1] || "";
+        newDonator.TotalSum = correctSum(element.sumNet);
     }
-}
-function getNextDonation(element) {
-    totalSum += parseFloat(element.sumNet);
-    return {
-        "Date": new Date(element.voucherDate).toLocaleDateString('de-DE'),
-        "Type": "Geldzuwendung",
-        "Waive": "nein",
-        "Sum": correctSum(element.sumNet),
-    }
+    totalSum = 0;
+    return newDonator;
 }
 
-function getDonatorErrorData (element) {
-    let familyname = element.supplierName.split(" ")[element.supplierName.split(" ").length - 1];
-    let surename = element.supplierName.replace(' ' + familyname, '');
-    return {
-        "ID": element.supplier.id  || '',
-        "Status": 0,
-        "CustomerNumber": "Error, keine Kdnr gefunden",
-        "AcademicTitle": "",
-        "Surename": surename,
-        "Familyname": familyname[-1],
-        "Street": "",
-        "ZipCity": "",
-        "TotalSum": correctSum(element.sumNet),
-        "Donations": [],
-    }
+function getNextDonation(element) {
+    totalSum += parseFloat(element.sumNet);
+    let newDonation = template.donation;
+    newDonation.Date = new Date(element.voucherDate).toLocaleDateString('de-DE');
+    newDonation.Sum = correctSum(element.sumNet);
+    return newDonation;
 }
+
 
 function convertNumToWord(num_f) {
     let euro = num2words.numToWord(parseInt(num_f), {indefinite_ein:true});
@@ -116,21 +100,27 @@ function convertNumToWord(num_f) {
 }
 
 function getAddressForContact(id) {
-    for (let i = 0; i < addresses.length; i++){
-        if(addresses[i].contact.id == id){
-            const address = addresses[i];
-            if(address && (!address.street || !address.zip || !address.city || !address.country.name)){
-                console.warn(`Information Warning: Address with ID ${address.id} is incomplete!`);
-            }
-            return address;
-        }
+    let found = addresses.find((address) => address.contact.id == id);
+    if(!found) {
+        console.error(`Information Error: No matching Address found at ID ${id}!`);
+        return undefined;
     }
-    console.error(`Information Error: No matching Address found at ID ${id}!`);
+    if(!found.street || !found.zip || !found.city || !found.country.name) console.warn(`Information Warning: Address with ID ${found.id} is incomplete!`);
+    
+    let newAddress = template.address;
+    newAddress.Street = found.street || undefined;
+    newAddress.Zip = found.zip || undefined;
+    newAddress.City = found.city || undefined;
+    newAddress.Country = found.country.name || undefined;
+    return newAddress;
 }
-
 
 function correctSum(sum_f){
     if (typeof sum_f == 'string') sum_f = parseFloat(sum_f);
     return sum_f.toLocaleString('de-DE', { style: 'currency',  currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2});
     // console.error("Value: " + sum_f + ", DataTye: " + typeof sum_f + ", Corrected: " + sum_f.toLocaleString('de-DE', { style: 'currency',  currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2}));
+}
+
+function getDonationsTotal() {
+    return allDonatorsSum;
 }

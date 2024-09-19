@@ -10,13 +10,17 @@ const sort = require('./sorting');
 
 async function fetchNew(req) {
     year = urlHandler.getYear(req.url)
-    formatting.setDonationData(await requests.getDonations(year));
+    let data = await requests.getDonations(year)
     console.log('DATA GATHERING (Donations) COMPLETE')
     formatting.setAddressData(await requests.getAllAddresses());
     console.log('DATA GATHERING (Addresses) COMPLETE')
+    sort.setDonationData(data.objects);
+    formatting.setDonationData(sort.sortDonationsPerID());
+    let formattedData = await formatting.newFormat();
     return {
         "Year": year,
-        "Data": await formatting.newFormat()
+        "DonationsTotal": await formatting.getDonationsTotal(),
+        "Data": formattedData
     }
 }
 

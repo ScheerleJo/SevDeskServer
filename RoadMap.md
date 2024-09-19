@@ -17,13 +17,14 @@
 - [x] request to delete specific Item(s) in index.js
 - [x] save current Status
 - [x] If existent, load data from data.json automatically in server and wait for request in the table
-- [ ] create new formatting algorithm (same output just not sorted to customer Number (sorting will be done on the frontend))
+- [x] create new formatting algorithm (same output just not sorted to customer Number (sorting will be done on the frontend))
 
 - LATER:
   - [ ] code the possibility to set tags in Sevdesk and pull these to check whether a Donation-Certificate has been created
+  - [ ] rewrite Latex-Output to use a Template with specified IDs
   - [x] Change Donations per Donator to correct order (switch around)
   - [x] Change Address handling. Dont create a separate Object for single use... Dont be stupid Josia
-  - [ ] Change Address search to more efficient Way
+  - [x] Change Address search to more efficient Way
   - Refactor and Cleanup
     - [x] formatting
     - [ ] config
@@ -57,6 +58,7 @@
   - [ ] Move Frontend to more suitable Framework
   - [ ] Move code to Rust
   - [ ] Set SaveData Path in FileSaveDialog
+  - [ ] Create some form of indicator, if the Server is doing something or not (Loadingbar, rotating Circle, ...)
 
 ## Extras
 

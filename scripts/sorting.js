@@ -4,7 +4,7 @@ var donationData = [];
 
 module.exports = {
     setDonationData,
-    listDonationsPerCN,
+    sortDonationsPerID,
     filterUsersPerID,
     deleteUserAtID,
     getIndexesforUserID
@@ -18,12 +18,14 @@ function setDonationData(APIData) {
  * sort all Donations from 'setData' by objects.supplier.customernumber & date from oldest to newest
  * @returns {Array<String>} Sorted donations
  */
-function listDonationsPerCN(specificData = undefined) {
+function sortDonationsPerID(specificData = undefined) {
     var activeData = specificData == undefined ? donationData : specificData;
     activeData.sort((a, b) => {
-        if (a.supplier.customerNumber > b.supplier.customerNumber || a.supplier.customerNumber == undefined) {
+        if(a.supplier == undefined || a.supplier.id == undefined) return 1;
+        else if (b.supplier == undefined || b.supplier.id == undefined) return -1;
+        else if (a.supplier.id > b.supplier.id) {
             return 1;
-        } else if (a.supplier.customerNumber < b.supplier.customerNumber || b.supplier.customerNumber == undefined) {
+        } else if (a.supplier.id < b.supplier.id) {
             return -1;
         }
         return 0;

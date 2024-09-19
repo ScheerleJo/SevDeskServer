@@ -1,8 +1,8 @@
 DocumentType = module;
 const axios = require('axios');
 
-let responseData = 'Hello, i am Data'
-let addressData = 'Hello, i am Data'
+var responseData = 'Hello, i am Data'
+var addressData = 'Hello, i am Data'
 
 module.exports = {
     getDonations,
@@ -24,19 +24,6 @@ async function  makeSevDeskRequestGET(querystring) {
     } catch (error) {
         console.error(error);
     }
-
-    /*
-    response = await axios.get(req, config).catch((error) => {
-        console.log(error);
-    });    
-    try {
-        data = response.data;
-    } catch (error) {
-        console.log(error);
-        await setTimeout(() => {return;}, 500);
-        console.log('sleep');
-    }
-    return await response.data;*/
 }
 
 async function getDonations(year, user = undefined){
