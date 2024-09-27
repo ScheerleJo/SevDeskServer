@@ -1,28 +1,29 @@
 DocumentType = module;
 
 const fs = require('fs');
-const config = require('./configHandling');
 const downloads = require('downloads-folder');
 const path = require('path');
-const os = require('os')
+const os = require('os');
+const config = new (require('./configuration'))();
 
 module.exports = {
     saveStatusToFile,
     loadStatusFromFile,
-    getTexData,
+    getTexTemplate,
     writeTexDoc,
     writeDotEnvToken
 }
 
 
-
-function saveStatusToFile(arrayData, year) {
+function saveStatusToFile(arrayData, year, donationsTotal) {
     let json = JSON.stringify({
         "Year": year,
+        "DonationsTotal": donationsTotal,
         "Data": arrayData
     });
+    let filePath = config.get('save-filePath') || __dirname + "\\data.json";
     try {
-        fs.writeFileSync(__dirname + "\\data.json", json);
+        fs.writeFileSync(filePath, json);
         return 200;
     } catch (error) {
         return error;
@@ -30,7 +31,7 @@ function saveStatusToFile(arrayData, year) {
 }
 
 function loadStatusFromFile() {
-    let filePath = __dirname + "\\data.json";
+    let filePath = config.get('save-filePath') || __dirname + "\\data.json";
     try {
         const data = fs.readFileSync(filePath ,
         { encoding: 'utf8', flag: 'r' });
@@ -58,11 +59,17 @@ function writeTexDoc(data) {
     }
 }
 
-function getTexData(filename) {
-    let filePath = './LaTeX-Templates/' + filename;
-    const data = fs.readFileSync(filePath ,
-    { encoding: 'utf8', flag: 'r' });
-    return data;
+function getTexTemplate() {
+    let filePath = path.join(process.cwd(), config.get('templatePath'));
+
+    if (fs.existsSync(filePath)) {
+        const data = fs.readFileSync(filePath,
+        { encoding: 'utf8', flag: 'r' });
+        return data;
+    }
+    else {
+        throw new Error('LaTeX-Template does not exist');
+    }
 }
 
 function writeDotEnvToken(token) {

@@ -1,0 +1,7 @@
+{
+  "application": {
+    "server-version": "beta1.1.0",
+    "server-port": 8040
+  },
+  "save-filePath": "C:\\Users\\schee\\Documents\\Coding\\SevDesk-BFU\\SevDesk-Server\\data.json"
+}
