@@ -2,10 +2,8 @@ DocumentType = module;
 
 const parseUrl = require('url-parse');
 
-
 module.exports = {
     getYear,
-    getMoveItem,
     getToken,
     getMultipleUserIDs
 }
@@ -19,14 +17,6 @@ function getYear(url) {
     return parseUrl(url, true).query.year;
 }
 
-/**
- * Get donatorIndex from QueryParams
- * @param {URL} url Request URL from Express
- * @returns {Number} Index of Donator to Move the status;
- */
-function getMoveItem(url) {
-    return parseUrl(url, true).query.donatorIndex;
-}
 
 /**
  * Get Token from QueryParams
@@ -43,7 +33,9 @@ function getToken(url) {
  * @returns {Array<Number>}
  */
 function getMultipleUserIDs(url) {
-    let ids = parseUrl(url, true).query.ids.split('-');
+
+    let ids = parseUrl(url, true).query.donatorIDs
+    ids = ids.split('-');
     for(let i = 0; i < ids.length; i++) {
         if(typeof(ids[i]) != "number") ids[i] = parseInt(ids[i]);
     }

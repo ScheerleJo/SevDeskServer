@@ -1,12 +1,11 @@
 module.exports = {
     fetchNew,
-    refetchUsers
+    // refetchUsers
 }
 
 const requests = require('./requests');
 const formatting = require('./formatting');
-const urlHandler = require('./urlHandling');
-const sort = require('./sorting');
+const urlHandler = require('./urlParser');
 
 async function fetchNew(req) {
     year = urlHandler.getYear(req.url)
@@ -14,16 +13,16 @@ async function fetchNew(req) {
     console.log('DATA GATHERING (Donations) COMPLETE')
     formatting.setAddressData(await requests.getAllAddresses());
     console.log('DATA GATHERING (Addresses) COMPLETE')
-    sort.setDonationData(data.objects);
-    formatting.setDonationData(sort.sortDonationsPerID());
-    let formattedData = await formatting.newFormat();
+    let mergedData = await formatting.mergeDonators(data.objects);
+    let actualSum = await formatting.getDonationsTotal(data.objects);
     return {
         "Year": year,
-        "DonationsTotal": await formatting.getDonationsTotal(),
-        "Data": formattedData
+        "DonationsTotal": formatting.correctSum(actualSum),
+        "Data": mergedData
     }
 }
 
+/*
 async function refetchUsers(req, year, donationData) {
     let users = urlHandler.getMultipleUserIDs(req.url);
 
@@ -32,8 +31,6 @@ async function refetchUsers(req, year, donationData) {
     let formattedData = formatting.newFormat();
 
     //Indexes for new elements in old 'donationData'-Array
-    let indexes = sort.getIndexforUserID(donationData, userIDs);
-
     for (let i = 0; i < formattedData.length; i++) {
         if(indexes[i] == -1) {
             console.error(`Error while updating users. UserID ${formattedData[i].ID}`);
@@ -42,4 +39,4 @@ async function refetchUsers(req, year, donationData) {
         donationData[indexes[i]] = formattedData[i];
     }
     return donationData;    
-}
+}*/

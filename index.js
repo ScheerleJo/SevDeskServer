@@ -1,35 +1,31 @@
-const config = require('./scripts/configHandling');
-const sort = require('./scripts/sorting');
+const config = new (require('./scripts/configuration'))();
 const fileHandler = require('./scripts/fileHandling');
-const urlHandler = require('./scripts/urlHandling');
-const out = require('./scripts/output');
+const urlHandler = require('./scripts/urlParser');
+const out = require('./scripts/latex');
 const func = require('./scripts/functionHandling');
-
-const process = require('node:process');
 const express = require('express');
-const cors = require('cors');
 var app = express();
 
-const VERSION = config.VERSION;
-const PORT = config.PORT;
+const VERSION = config.getVersion();
+const PORT = config.getPort();
 
 console.log(`SevDesk-Extension for Theologische Fernschule e.V. running on Version: ${VERSION}`)
 console.log('Trying to start the server...')
 
-let corsOptions = {
+
+// Options for the FrontEnd to function properly
+app.use(require('cors')({
     origin: '*',
     optionsSuccessStatus: 200,
     methods: "GET, PUT, POST"
-}
-
-// Options for the FrontEnd to function properly
-app.use(cors(corsOptions));
-let donationData, year;
+}));
+let donationData, year, donationsTotal;
 let loadedData = fileHandler.loadStatusFromFile();
 
-if (loadedData != undefined) {
+if (loadedData) {
     donationData = loadedData.Data;
     year = loadedData.Year;
+    donationsTotal = loadedData.DonationsTotal;
 }
 
 app.get('/', (req, res) => {
@@ -45,7 +41,7 @@ app.get('/kill', (req, res) => {
 });
 
 app.get('/saveToken', (req,res) => {
-    fileHandler.writeDotEnvToken(urlHandler.getToken(req.url));
+    fileHandler.writeAPIToken(urlHandler.getToken(req.url));
     res.send({
         "Status": 200
     })
@@ -53,64 +49,74 @@ app.get('/saveToken', (req,res) => {
 
 app.get('/fetchNew', (req, res) => {
     func.fetchNew(req).then((data) => {
+        year = data.Year;
         donationData = data.Data;
+        donationsTotal = data.DonationsTotal;
         res.send(data);
     });
 })
 
 app.get('/saveData', (req, res) => {
-    let response = fileHandler.saveStatusToFile(donationData, year);
+    let response = fileHandler.saveStatusToFile(donationData, year, donationsTotal);
     res.send({"Status": response});     //  Send Status Code (200 for everything okay)
     console.log('SAVE-DATA STATUS: ' + response)
 });
 app.get('/loadData', (req, res) => {
     res.send({
         "Year": year,
+        "DonationsTotal": donationsTotal,
         "Data": donationData
     });
 });
 
-app.get('/deleteItem', (req, res) => { ///deleteItem?donatorIndex=...(num)&donationIndex=...(num)&deleteAll=...(true/false)
-    sort.setDonationData(donationData);
-    let returnValue = sort.deleteItemAtUserID(urlHandler.getMultipleUserIDs(req.url))
-    if (returnValue == 400) res.send({"Status": 400, "response": "Error while deleting Item"}); 
-    else {
-        donationData = returnValue;
-        res.send(donationData);
+app.get('/deleteDonator', (req, res) => { ///deleteDonator?donatorIDs=1-2-3-...
+    let userID = urlHandler.getMultipleUserIDs(req.url);
+    for(let i = 0; i < userID.length; i++) {
+        if(donationData[userID[i]]) delete donationData[userID[i]];
+        else {
+            res.send({"Status": 400, "response": "Error while deleting Donator"})
+            throw ReferenceError('UserID could not be found');
+        }
     }
+    res.send(donationData);
 });
-app.get('/moveItem', (req, res) => {
-    sort.setDonationData(donationData);
-    let index = urlHandler.getMoveItem(req.url);
-    if(donationData[index].Status != 2) donationData[index].Status ++;
+app.get('/moveDonator', (req, res) => {
+    let ids = urlHandler.getMultipleUserIDs(req.url);
+    for(let i = 0; i < ids.length; i++) {
+        if(donationData[ids[i]].Status != 2) donationData[ids[i]].Status ++;
+    }
     res.send(donationData);
 })
 
 app.get('/createLatex', (req, res) => {
-    out.setYear(year);
     let latexElements = [];
     for(let i = 0; i < donationData.length; i++) {
         if(donationData[i].Status == 1) latexElements.push(donationData[i]);
     }
-    out.setData(latexElements);
-    let output = out.createTexDoc();
-    let success = fileHandler.writeTexDoc(output);
-    if (success != 200) res.send(success); 
-    else  {
+    let success = fileHandler.writeTexDoc(out.createTexDocument(donationData, year));
+    if (success != 200) res.send({
+        "Status": success,
+        "response": "Error while creating LaTeX-File"
+    }); 
+    else {
         res.send({
             "Status": 200,
-            "response": "LaTeX File Created Successfully!"
+            "response": "LaTeX-File Created Successfully!"
         })
         console.log("LaTeX-FILE SUCCESSFULL CREATED")
     }
 });
-
+/*
 app.get('/refetchUsers', (req, res) => {
     oldData = donationData;
     func.refetchUsers(req, year, donationData).then((data) => {
         res.send(data);
     })
-})
+    res.send({
+        "Status": 400,
+        "response": "Functionality currently not working due to refactoring"
+    });
+})*/
 
 app.listen(PORT, function(){  
     console.log(`Server running on Port ${PORT}`);
