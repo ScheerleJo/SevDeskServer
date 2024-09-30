@@ -1,8 +1,8 @@
 const config = new (require('./scripts/configuration'))();
-const fileHandler = require('./scripts/fileHandling');
+const fileHandler = require('./scripts/fileIO');
 const urlHandler = require('./scripts/urlParser');
 const out = require('./scripts/latex');
-const func = require('./scripts/functionHandling');
+const func = require('./scripts/functions');
 const express = require('express');
 var app = express();
 
@@ -42,9 +42,7 @@ app.get('/kill', (req, res) => {
 
 app.get('/saveToken', (req,res) => {
     fileHandler.writeAPIToken(urlHandler.getToken(req.url));
-    res.send({
-        "Status": 200
-    })
+    res.send({"Status": 200})
 })
 
 app.get('/fetchNew', (req, res) => {
@@ -62,11 +60,7 @@ app.get('/saveData', (req, res) => {
     console.log('SAVE-DATA STATUS: ' + response)
 });
 app.get('/loadData', (req, res) => {
-    res.send({
-        "Year": year,
-        "DonationsTotal": donationsTotal,
-        "Data": donationData
-    });
+    res.send({ "Year": year, "DonationsTotal": donationsTotal, "Data": donationData});
 });
 
 app.get('/deleteDonator', (req, res) => { ///deleteDonator?donatorIDs=1-2-3-...
@@ -74,7 +68,7 @@ app.get('/deleteDonator', (req, res) => { ///deleteDonator?donatorIDs=1-2-3-...
     for(let i = 0; i < userID.length; i++) {
         if(donationData[userID[i]]) delete donationData[userID[i]];
         else {
-            res.send({"Status": 400, "response": "Error while deleting Donator"})
+            res.send({"Status": 400, "Response": "Error while deleting Donator"})
             throw ReferenceError('UserID could not be found');
         }
     }
@@ -93,30 +87,24 @@ app.get('/createLatex', (req, res) => {
     for(let i = 0; i < donationData.length; i++) {
         if(donationData[i].Status == 1) latexElements.push(donationData[i]);
     }
+    if(latexElements.length == 0) {
+        res.send({"Status": 400, "Response": "No Donations to create LaTeX-File"})
+        return;
+    }
     let success = fileHandler.writeTexDoc(out.createTexDocument(donationData, year));
-    if (success != 200) res.send({
-        "Status": success,
-        "response": "Error while creating LaTeX-File"
-    }); 
+    if (success != 201) res.send({"Status": success,"Response": "Error while creating LaTeX-File"}); 
     else {
-        res.send({
-            "Status": 200,
-            "response": "LaTeX-File Created Successfully!"
-        })
+        res.send({"Status": success,"Response": "LaTeX-File Created Successfully!"})
         console.log("LaTeX-FILE SUCCESSFULL CREATED")
     }
 });
-/*
+
 app.get('/refetchUsers', (req, res) => {
     oldData = donationData;
     func.refetchUsers(req, year, donationData).then((data) => {
         res.send(data);
-    })
-    res.send({
-        "Status": 400,
-        "response": "Functionality currently not working due to refactoring"
     });
-})*/
+})
 
 app.listen(PORT, function(){  
     console.log(`Server running on Port ${PORT}`);
