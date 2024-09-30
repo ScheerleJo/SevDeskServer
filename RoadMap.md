@@ -4,7 +4,7 @@
 
 - [x] manipulate latex files to the Data points in the table
 - [x] create LaTeX file (on header, then blocks for each donator, then footer)
-- [ ] request to delete specific Item(s) in index.js
+- [x] request to delete specific Item(s) in index.js
 - [ ] Save the config properties to specific file.
 
 - LATER:
@@ -14,7 +14,7 @@
   - Refactor and Cleanup
     - [x] formatting
     - [x] config
-    - [ ] fileHandling
+    - [x] fileHandling
     - [x] output
     - [x] requests
 

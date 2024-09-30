@@ -22,17 +22,13 @@ module.exports = {
  * @returns {Number} the status code of the operation
  */
 function saveStatusToFile(arrayData, year, donationsTotal) {
-    let json = JSON.stringify({
-        "Year": year,
-        "DonationsTotal": donationsTotal,
-        "Data": arrayData
-    });
+    let json = JSON.stringify({"Year": year, "DonationsTotal": donationsTotal, "Data": arrayData });
     let filePath = config.get('save-filePath') || __dirname + "\\data.json";
     try {
         fs.writeFileSync(filePath, json);
-        return 201;
+        return {"Status": 201,"Response": "Data Saved Successfully!"};
     } catch (error) {
-        return error;
+        return {"Status": 500 ,"Response": "Error while saving the data" + error};
     }
 }
 
@@ -42,14 +38,16 @@ function saveStatusToFile(arrayData, year, donationsTotal) {
  */
 function loadStatusFromFile() {
     let filePath = config.get('save-filePath') || __dirname + "\\data.json";
+    if(!fs.existsSync(filePath)) {
+        console.info('File info: No status could be loaded from: ' + filePath);
+        return undefined;
+    }
     try {
-        const data = fs.readFileSync(filePath ,
-        { encoding: 'utf8', flag: 'r' });
-        console.log('last saved status loaded from: ' + filePath);
+        const data = fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
+        console.info('File info: Last saved status loaded from: ' + filePath);
         return JSON.parse(data);
     } catch(error) {
-        console.log('No status could be loaded from: ' + filePath);
-        return undefined;
+        console.error('Parsing Error: Server ran into an issue when reading the save-file:\n' + error);
     }
 }
 
@@ -62,15 +60,15 @@ function writeTexDoc(data) {
     let filePath;
     let inject = 0;
     do {
-        filePath = downloads();
-        filePath += `/main${inject == 0 ? '': inject}.tex`;
+        filePath = path.join(downloads(), `/main${inject == 0 ? '': inject}.tex`)
         inject ++;
     } while(fs.existsSync(filePath));
     try {
         fs.writeFileSync(filePath, data);
-        return 201;
+        console.log("LaTeX-FILE SUCCESSFULL CREATED")
+        return {"Status": 201,"Response": "LaTeX-File Created Successfully!"};
     } catch (error) {
-        return error;
+        return {"Status": 500 ,"Response": "Error while creating LaTeX-File" + error};
     }
 }
 
@@ -79,16 +77,9 @@ function writeTexDoc(data) {
  * @returns {String} the LaTeX Template
  */
 function getTexTemplate() {
-    let filePath = path.join(process.cwd(), config.get('templatePath'));
-
-    if (fs.existsSync(filePath)) {
-        const data = fs.readFileSync(filePath,
-        { encoding: 'utf8', flag: 'r' });
-        return data;
-    }
-    else {
-        throw new Error('LaTeX-Template does not exist');
-    }
+    let filePath = path.resolve(process.cwd(), config.get('templatePath'));
+    if (fs.existsSync(filePath)) return fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
+    else throw new Error('LaTeX-Template does not exist');
 }
 
 /**
@@ -99,4 +90,9 @@ function writeDotEnvToken(token) {
     let filePath = path.resolve(process.cwd(), ".env")
     let vars = ['API_TOKEN = ' + token];
     fs.writeFileSync(filePath, vars.join(os.EOL));
+
+    //Check if the token was saved correctly
+    require('dotenv').config();
+    if(process.env.API_TOKEN == token) return {"Status": 200,"Response": "Token saved successfully!"};
+    else return {"Status": 500 ,"Response": "An error occured while saving the token"};
 }

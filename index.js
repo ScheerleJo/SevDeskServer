@@ -40,12 +40,14 @@ app.get('/kill', (req, res) => {
     process.exit()
 });
 
-app.get('/saveToken', (req,res) => {
-    fileHandler.writeAPIToken(urlHandler.getToken(req.url));
-    res.send({"Status": 200})
+app.get('/saveToken', (req,res) => { // /saveToken?token=...
+    let response = fileHandler.writeDotEnvToken(urlHandler.getToken(req.url));
+    res.send(response);
+    console.log(response);
 })
 
-app.get('/fetchNew', (req, res) => {
+
+app.get('/fetchNew', (req, res) => { // /fetchNew?year=...
     func.fetchNew(req).then((data) => {
         year = data.Year;
         donationData = data.Data;
@@ -56,25 +58,25 @@ app.get('/fetchNew', (req, res) => {
 
 app.get('/saveData', (req, res) => {
     let response = fileHandler.saveStatusToFile(donationData, year, donationsTotal);
-    res.send({"Status": response});     //  Send Status Code (200 for everything okay)
-    console.log('SAVE-DATA STATUS: ' + response)
+    res.send(response);
+    console.log(response);
 });
 app.get('/loadData', (req, res) => {
     res.send({ "Year": year, "DonationsTotal": donationsTotal, "Data": donationData});
 });
 
-app.get('/deleteDonator', (req, res) => { ///deleteDonator?donatorIDs=1-2-3-...
+app.get('/deleteDonator', (req, res) => { // /deleteDonator?donatorIDs=1-2-3-...
+    let hasErrorOccured = false;
+    let workingData = donationData;
     let userID = urlHandler.getMultipleUserIDs(req.url);
     for(let i = 0; i < userID.length; i++) {
-        if(donationData[userID[i]]) delete donationData[userID[i]];
-        else {
-            res.send({"Status": 400, "Response": "Error while deleting Donator"})
-            throw ReferenceError('UserID could not be found');
-        }
+        if(donationData[userID[i]]) delete workingData[userID[i]];
+        else hasErrorOccured = true;
     }
-    res.send(donationData);
+    res.send(hasErrorOccured ? {"Status": 400, "Response": "Error: Specified User does not exist"} : workingData);
+    donationData = workingData;
 });
-app.get('/moveDonator', (req, res) => {
+app.get('/moveDonator', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...
     let ids = urlHandler.getMultipleUserIDs(req.url);
     for(let i = 0; i < ids.length; i++) {
         if(donationData[ids[i]].Status != 2) donationData[ids[i]].Status ++;
@@ -84,23 +86,22 @@ app.get('/moveDonator', (req, res) => {
 
 app.get('/createLatex', (req, res) => {
     let latexElements = [];
-    for(let i = 0; i < donationData.length; i++) {
-        if(donationData[i].Status == 1) latexElements.push(donationData[i]);
+    for(const key in donationData) {
+        if(donationData[key].Status == 1) latexElements.push(donationData[key]);
     }
     if(latexElements.length == 0) {
-        res.send({"Status": 400, "Response": "No Donations to create LaTeX-File"})
-        return;
-    }
-    let success = fileHandler.writeTexDoc(out.createTexDocument(donationData, year));
-    if (success != 201) res.send({"Status": success,"Response": "Error while creating LaTeX-File"}); 
-    else {
-        res.send({"Status": success,"Response": "LaTeX-File Created Successfully!"})
-        console.log("LaTeX-FILE SUCCESSFULL CREATED")
+        let response = {"Status": 400, "Response": "No Donations to create LaTeX-File"} 
+        res.send(response);
+        console.log(response);
+        
+    } else {
+        let response = fileHandler.writeTexDoc(out.createTexDocument(latexElements, year));
+        res.send(response);
+        console.log(response);
     }
 });
 
-app.get('/refetchUsers', (req, res) => {
-    oldData = donationData;
+app.get('/refetchUsers', (req, res) => { // /refetchUsers?donatorIDs=1-2-3-...
     func.refetchUsers(req, year, donationData).then((data) => {
         res.send(data);
     });
