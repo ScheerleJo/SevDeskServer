@@ -1,11 +1,8 @@
 DocumentType = module;
-const fileHandler = require('./fileHandling');
-// const latex = require('node-latex'); Disabled for now, theoretically it should work
+const fileHandler = require('./fileIO');
 const mustache = require('mustache');
-const Config = require('./configuration');
-
-let config = new Config();
-
+const config = new (require('./configuration'))();
+// const latex = require('node-latex'); Disabled for now, theoretically it should work
 
 module.exports = { createTexDocument };
 
@@ -13,6 +10,13 @@ module.exports = { createTexDocument };
 mustache.tags = [ '<<', '>>' ];
 mustache.escape = text => text;
 
+
+/**
+ * create the latex document from the data and template
+ * @param {Map<Number,JSON>} data the data of the selected donators
+ * @param {any} year the year of the donations
+ * @returns {String} the latex document as a string
+ */
 function createTexDocument(data, year) {
     const template = fileHandler.getTexTemplate();
     const header = template.split('<<LETTERSTART>>')[0];
@@ -37,23 +41,20 @@ function createTexDocument(data, year) {
         const letter = template.split('<<LETTERSTART>>')[1].split('<<LETTEREND>>')[0];
         input += createLetter(checkDonatorElement(data[key]), year, letter);
     }
-
     input += template.split('<<LETTEREND>>')[1];
     return input;
 
-    
     // latex(input).pipe(fs.createWriteStream('hello-tex.pdf'));
 }
 
 
-
-
-
-function createTimePeriod(year) {
-    return `01.01.${year} \u2012 31.12.${year}`;
-}
-
-
+/**
+ * Fill the template with the data of the donator
+ * @param {JSON} element the single donator to create the letter for
+ * @param {Number} year Year of the donations
+ * @param {String} letter Template for the letter
+ * @returns {String} the latex-letter as a string
+ */
 function createLetter(element, year, letter) {
     let surename = element.AcademicTitle ? element.AcademicTitle + ' ' + element.Surename : element.Surename;
     return mustache.render(letter, {
@@ -65,11 +66,16 @@ function createLetter(element, year, letter) {
         country: element.Address.Country,
         totalsum: element.TotalSum,
         suminwords: element.SumInWords,
-        timeframe: createTimePeriod(year),
+        timeframe: `01.01.${year} \u2012 31.12.${year}`,
         donations: createTexDonations(element.Donations)
     });
 }
 
+/**
+ * Create the donation entries for the letter
+ * @param {Array<JSON>} donations the donations of the donator
+ * @returns {String} the donation entries as a string
+ */
 function createTexDonations(donations){
     let donationString = '';
     const donationTemplate = config.get('donationScheme');
@@ -84,10 +90,21 @@ function createTexDonations(donations){
     return donationString;
 }
 
+/**
+ * Check if the element is not null or undefined
+ * @param {any} element the element to check
+ * @returns {any} the element or an empty string
+ */
 function checkValue(element) {
     if(element) return element;
     return '';
 }
+
+/**
+ * Check if the element is not null or undefined
+ * @param {JSON} element the element to check
+ * @returns {JSON} the element with checked values
+ */
 function checkDonatorElement(element) {
     element.AcademicTitle = checkValue(element.AcademicTitle);
     element.Surename = checkValue(element.Surename);

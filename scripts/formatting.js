@@ -12,13 +12,18 @@ module.exports = {
 
 var addresses = [];
 
+/**
+ * Set the Address Data for the Donators
+ * @param {Array<JSON>} APIData the data from the API
+ */
 function setAddressData(APIData) {
     addresses = APIData.objects;
 }
 
 /**
- * Format the data sorted by this module to push to Frontend
- * @returns formattedData Array<JSON>
+ * Format and merge the data to push to Frontend
+ * @param {Array<JSON>} data the data from the API
+ * @returns {Array<JSON>} the merged data 
  */
 function mergeDonators(data) {
     let errorUsers = [];
@@ -62,6 +67,11 @@ function mergeDonators(data) {
     return user;
 }
 
+/**
+ * Create a new Donation Object
+ * @param {JSON} element the element from the API
+ * @returns {JSON} the new Donation Object
+ */
 function createNewDonation(element) {
     let newDonation = template.donation();
     newDonation.Date = new Date(element.voucherDate).toLocaleDateString('de-DE');
@@ -69,6 +79,11 @@ function createNewDonation(element) {
     return newDonation;
 }
 
+/**
+ * Check the Names of the Donators
+ * @param {JSON} element the element from the API
+ * @returns {JSON} the corrected Names
+ */
 function checkDonatorName(element) {
     if(element.supplier) {
         let familyname = element.supplier.familyname || "";
@@ -83,7 +98,11 @@ function checkDonatorName(element) {
     return { "familyname": "", "surename": "" }
 }
 
-
+/**
+ * Convert a Number to a a currency word
+ * @param {Number} num_f the number to convert
+ * @returns {String} the number as a currency word
+ */
 function convertNumToWord(num_f) {
     let euro = num2words.numToWord(parseInt(num_f), {indefinite_ein:true});
     let cent =  num2words.numToWord((num_f % 1).toFixed(2).substring(2), {indefinite_ein:true});
@@ -92,6 +111,11 @@ function convertNumToWord(num_f) {
     return euro + ' Euro ' +  cent;
 }
 
+/**
+ * Get the Address for the Contact
+ * @param {Number} id the ID of the Contact
+ * @returns {JSON} the Address
+ */
 function getAddressForContact(id) {
     let found = addresses.find((address) => address.contact.id == id);
     if(!found) {
@@ -108,12 +132,22 @@ function getAddressForContact(id) {
     return newAddress;
 }
 
+/**
+ * Correct the Sum to a currency string
+ * @param {Number} sum_f the sum to correct
+ * @returns {String} the corrected sum
+ */
 function correctSum(sum_f){
     if (typeof sum_f == 'string') sum_f = parseFloat(sum_f);
     return sum_f.toLocaleString('de-DE', { style: 'currency',  currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2});
     // console.error("Value: " + sum_f + ", DataTye: " + typeof sum_f + ", Corrected: " + sum_f.toLocaleString('de-DE', { style: 'currency',  currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2}));
 }
 
+/**
+ * Get the total sum of all donations
+ * @param {Array<JSON>} data the data from the API
+ * @returns {Number} the total sum of all donations
+ */
 function getDonationsTotal(data) {
     let actualTotalSum = 0;
     for(let i = 0; i < data.length; i++) {

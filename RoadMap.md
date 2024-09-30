@@ -15,8 +15,8 @@
     - [x] formatting
     - [x] config
     - [ ] fileHandling
-    - [ ] output
-    - [ ] requests
+    - [x] output
+    - [x] requests
 
 ## Frontend
 
@@ -25,6 +25,7 @@
 
 - [ ] Set SaveData Path in FileSaveDialog
 - [ ] Create some form of indicator, if the Server is doing something or not (Loadingbar, rotating Circle, ...)
+- [ ] Make Latex Template bindings in admin Panel (let user create own bindings to the template shortcuts)
 
 Es gibt zwei Stadien:
 Offen: alle ungeprüften Spenden
@@ -39,10 +40,10 @@ Geprüft: alle Spendeneinträge die geprüft wurden. Hier gibt es zwei unterkate
 - [ ] create Documentation
 - [ ] create Executable for Server
 - [ ] create Documentation for Frontend
+- [ ] - Button zum pdf erstellen
 
 ## Future Stuff
 
-- Button zum pdf erstellen
 (- Frage ob alles passt, wenn ja wird Tag geschrieben (bei Contact als auch allen Voucher))
 
 ## Fragen

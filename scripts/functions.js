@@ -1,12 +1,17 @@
 module.exports = {
     fetchNew,
-    // refetchUsers
+    refetchUsers
 }
 
 const requests = require('./requests');
 const formatting = require('./formatting');
 const urlHandler = require('./urlParser');
 
+/**
+ * Fetch new Data from the API and return it
+ * @param {Request} req the request from the frontend
+ * @returns {JSON} the new Data
+ */
 async function fetchNew(req) {
     year = urlHandler.getYear(req.url)
     let data = await requests.getDonations(year)
@@ -22,21 +27,27 @@ async function fetchNew(req) {
     }
 }
 
-/*
+/**
+ * Refetch specific Users from the API and update the donationData
+ * @param {Request} req the request from the frontend
+ * @param {Number} year the year of the donations
+ * @param {Array<JSON>} donationData the old data 
+ * @returns {Array<JSON>} the updated data
+ */
 async function refetchUsers(req, year, donationData) {
     let users = urlHandler.getMultipleUserIDs(req.url);
 
-    formatting.setDonationData(await requests.getDonations(year, users.length == 1 ? users.ID[0] : undefined));
+    let newData = await requests.getDonations(year, users.length == 1 ? users.ID[0] : undefined)
     formatting.setAddressData(await requests.getAllAddresses());
-    let formattedData = formatting.newFormat();
+    let mergedData = formatting.mergeDonators(newData.objects);
 
     //Indexes for new elements in old 'donationData'-Array
-    for (let i = 0; i < formattedData.length; i++) {
-        if(indexes[i] == -1) {
-            console.error(`Error while updating users. UserID ${formattedData[i].ID}`);
+    for (let i = 0; i < users.length; i++) {
+        if(!mergedData[users[i]]) {
+            console.error('User with ID ' + users[i] + ' not found in new Data');
             continue;
         }
-        donationData[indexes[i]] = formattedData[i];
+        donationData[users[i]] = mergedData[users[i]];
     }
     return donationData;    
-}*/
+}

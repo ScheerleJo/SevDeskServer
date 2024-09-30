@@ -99,6 +99,45 @@ Sollten sich Fehler in den Daten befinden, müssen diese über SevDesk korrigier
 
 Aktuell werden dabei alle Elemente überschrieben egal, was für einen Status sie bereits erreicht haben. Das kann sich in der Zukunft ändern, sollte das gewünscht sein.
 
+## Latex
+
+Für die Latex-Dokument-Generierung wird eine Vorlage benötigt. Der Pfad zu dieser Datei muss in der `latex_config.json` im Attribut "templatePath" angegeben werden.
+Im Aktuellen Stand des Tools werden feste Bindings verwendet um in der Vorlage die Platzhalter bei der Erstellung zu ersetzen. Für spätere Versionen ist geplant, diese über die graphische Oberfläche dynamisch erstellen und verwalten zu können.
+
+Das Schema für die einzelnen Spenden ist ebenfalls in der `latex_config.json` anpassbar. Die Platzhalter werden durch die Begrenzungszeichen `<<` und `>>` beschränkt.
+
+Die aktuellen Platzhalter sind wiefolgt:
+
+Vereins-/Firmendetails:
+
+| Name | Platzhalter | Config-Datei |
+| ---- | ----------- | ------------ |
+| Straße und Hausnr. | `<<fromstreet>>` | `company.address.street` |
+| Stadt | `<<fromcity>>` | `company.address.city` |
+| Postleitzahl | `<<fromzipcode>>` | `company.address.zip` |
+| Vereinsname | `<<fromname>>` | `company.name` |
+| Telefonnummer | `<<fromphone>>` | `company.phone` |
+| Email-Adresse | `<<fromemail>>` | `company.email` |
+| Website | `<<fromurl>>` | `company.url` |
+| Bank Name | `<<frombankname>>` | `company.bank.name` |
+| IBAN | `<<fromiban>>` | `company.bank.iban` |
+| BIC | `<<frombic>>` | `company.bank.bic` |
+
+Spenderdetails:
+
+| Name | Platzhalter |
+| ---- | ----------- |
+| Vorname | `<<surename>>` |
+| Nachname | `<<familyname>>` |
+| Straße und Hausnr. | `<<street>>` |
+| PLZ | `<<zip>>` |
+| Stadt | `<<city>>` |
+| Land | `<<country>>` |
+| Gesamtsumme | `<<totalsum>>` |
+| In Worten | `<<suminwords>>` |
+| Zeitraum | `<<timeframe>>` |
+| Spenden | `<<donations>>` |
+
 ## Fehlerbehebung
 
 Sollten Fehler auftreten ist in der Benuteroberfläche die Email-Adresse und eine Telefonnummer zu finden. Bei Fragen am besten per WhatsApp oder Mail. Bei ganz dringenden Fällen anrufen.
