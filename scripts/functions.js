@@ -1,19 +1,18 @@
 module.exports = {
     fetchNew,
-    refetchUsers
+    refetchUsers,
+    getMultipleUserIDs
 }
 
 const requests = require('./requests');
 const formatting = require('./formatting');
-const urlHandler = require('./urlParser');
 
 /**
  * Fetch new Data from the API and return it
  * @param {Request} req the request from the frontend
  * @returns {JSON} the new Data
  */
-async function fetchNew(req) {
-    year = urlHandler.getYear(req.url)
+async function fetchNew(year) {
     let data = await requests.getDonations(year)
     console.log('DATA GATHERING (Donations) COMPLETE')
     formatting.setAddressData(await requests.getAllAddresses());
@@ -34,8 +33,8 @@ async function fetchNew(req) {
  * @param {Array<JSON>} donationData the old data 
  * @returns {Array<JSON>} the updated data
  */
-async function refetchUsers(req, year, donationData) {
-    let users = urlHandler.getMultipleUserIDs(req.url);
+async function refetchUsers(donatorIDs, year, donationData) {
+    let users = getMultipleUserIDs(donatorIDs);
 
     let newData = await requests.getDonations(year, users.length == 1 ? users.ID[0] : undefined)
     formatting.setAddressData(await requests.getAllAddresses());
@@ -50,4 +49,17 @@ async function refetchUsers(req, year, donationData) {
         donationData[users[i]] = mergedData[users[i]];
     }
     return donationData;    
+}
+
+/**
+ * Split multiple concatenated UserIDs from a request 
+ * @param {String} string concatenated ids from request
+ * @returns {Array<Number>}
+ */
+function getMultipleUserIDs(ids) {
+    ids = ids.split('-');
+    for(let i = 0; i < ids.length; i++) {
+        if(typeof(ids[i]) != "number") ids[i] = parseInt(ids[i]);
+    }
+    return ids;
 }

@@ -1,6 +1,5 @@
 const config = new (require('./scripts/configuration'))();
 const fileHandler = require('./scripts/fileIO');
-const urlHandler = require('./scripts/urlParser');
 const out = require('./scripts/latex');
 const func = require('./scripts/functions');
 const express = require('express');
@@ -41,14 +40,14 @@ app.get('/kill', (req, res) => {
 });
 
 app.get('/saveToken', (req,res) => { // /saveToken?token=...
-    let response = fileHandler.writeDotEnvToken(urlHandler.getToken(req.url));
+    let response = fileHandler.writeDotEnvToken(req.query.token);
     res.send(response);
     console.log(response);
 })
 
 
 app.get('/fetchNew', (req, res) => { // /fetchNew?year=...
-    func.fetchNew(req).then((data) => {
+    func.fetchNew(req.query.year).then((data) => {
         year = data.Year;
         donationData = data.Data;
         donationsTotal = data.DonationsTotal;
@@ -68,7 +67,7 @@ app.get('/loadData', (req, res) => {
 app.get('/deleteDonator', (req, res) => { // /deleteDonator?donatorIDs=1-2-3-...
     let hasErrorOccured = false;
     let workingData = donationData;
-    let userID = urlHandler.getMultipleUserIDs(req.url);
+    let userID = func.getMultipleUserIDs(req.query.donatorIDs);
     for(let i = 0; i < userID.length; i++) {
         if(donationData[userID[i]]) delete workingData[userID[i]];
         else hasErrorOccured = true;
@@ -77,9 +76,9 @@ app.get('/deleteDonator', (req, res) => { // /deleteDonator?donatorIDs=1-2-3-...
     donationData = workingData;
 });
 app.get('/moveDonator', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...
-    let ids = urlHandler.getMultipleUserIDs(req.url);
-    for(let i = 0; i < ids.length; i++) {
-        if(donationData[ids[i]].Status != 2) donationData[ids[i]].Status ++;
+    let userID = func.getMultipleUserIDs(req.query.donatorIDs);
+    for(let i = 0; i < userID.length; i++) {
+        if(donationData[userID[i]].Status != 2) donationData[userID[i]].Status ++;
     }
     res.send(donationData);
 })
@@ -102,7 +101,7 @@ app.get('/createLatex', (req, res) => {
 });
 
 app.get('/refetchUsers', (req, res) => { // /refetchUsers?donatorIDs=1-2-3-...
-    func.refetchUsers(req, year, donationData).then((data) => {
+    func.refetchUsers(req.query.donatorIDs, year, donationData).then((data) => {
         res.send(data);
     });
 })
