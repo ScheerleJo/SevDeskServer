@@ -3,6 +3,7 @@ class Template {
 
     donation() {
         return {
+            "id": 0,
             "Date": new Date(),
             "Type": "Geldzuwendung",
             "Waive": "nein",
@@ -11,8 +12,8 @@ class Template {
     }
     donator() {
         return {
-            "ID": 0,
-            "Status": 0,
+            "id": 0,
+            "Status": 'unchecked',
             "AcademicTitle": "",
             "Surename": "",
             "Familyname": "",

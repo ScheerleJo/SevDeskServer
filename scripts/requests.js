@@ -33,7 +33,7 @@ async function  makeSevDeskRequestGET(querystring) {
  */
 async function getDonations(year, user = undefined){
     let request = "Voucher?embed=accountingTypes%2CaccountingTypes.accountingSystemNumber%2Csupplier%2Csupplier.category%2Cobject%2Cdebit%2Cdelinquent&countAll=true&limit=none&voucherType=VOU&emptyState=true&accountingType[id]=679076&accountingType[objectName]=AccountingType&year=" + year
-    if(user != undefined) request += "&contact[objectName]=Contact&contact[id]=" + user;
+    if(user) request += "&contact[objectName]=Contact&contact[id]=" + user;
     return await makeSevDeskRequestGET(request);
 }
 

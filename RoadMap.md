@@ -23,7 +23,7 @@
 - [ ] Recreate Frontend in React
 - [ ] sorting for different criterias (maybe with arrows next to column-heading) (either sort in react-Table or in sorting.js in backend)
 
-- [ ] Set SaveData Path in FileSaveDialog
+- [ ] Set SaveData Path in FileSaveDialog or use default download folder from browser, since its running on a dedicated server and not on the client machines
 - [ ] Create some form of indicator, if the Server is doing something or not (Loadingbar, rotating Circle, ...)
 - [ ] Make Latex Template bindings in admin Panel (let user create own bindings to the template shortcuts)
 
@@ -44,8 +44,16 @@ Geprüft: alle Spendeneinträge die geprüft wurden. Hier gibt es zwei unterkate
 
 ## Future Stuff
 
-(- Frage ob alles passt, wenn ja wird Tag geschrieben (bei Contact als auch allen Voucher))
+(- Frage ob alles passt, wenn ja wird Tag geschrieben (bei allen Voucher))
 
 ## Fragen
 
-- Wird bei der Signature in Latex das tatsächliche Datum genommen oder immer der 1.1.xx?
+- Wird bei der Signature in Latex das tatsächliche Datum genommen oder immer der 1.1.xx? - Tatsächliches Datum
+- Ist es Sinnvoller die Spenden direkt in der Tabelle aufzurufen, oder besser, wenn das ein eingenes Fenster ist?  - Eigenes Fenster
+
+## Prio
+
+- GUI neu
+- Datenrunterladen, Kontrollschritt, Latex schreiben
+- Einzelne Datensätze neu runterladen (Daten zusätzlich neu holen "lass alles wie es ist und füg neues hinzu")
+- Tags

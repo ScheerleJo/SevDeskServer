@@ -34,7 +34,7 @@ function mergeDonators(data) {
             const id = data[i].supplier.id;
             if(!user[id]) {
                 user[id] = template.donator();
-                user[id].ID = id;
+                user[id].id = id;
                 user[id].AcademicTitle = data[i].supplier.academicTitle || "";
                 let correctedNames = checkDonatorName(data[i]);
                 user[id].Surename = correctedNames.surename;

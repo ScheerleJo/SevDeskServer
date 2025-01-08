@@ -22,7 +22,8 @@ async function fetchNew(year) {
     return {
         "Year": year,
         "DonationsTotal": formatting.correctSum(actualSum),
-        "Data": mergedData
+        "Data": mergedData,
+        "Total": mergedData.length
     }
 }
 
@@ -36,7 +37,7 @@ async function fetchNew(year) {
 async function refetchUsers(donatorIDs, year, donationData) {
     let users = getMultipleUserIDs(donatorIDs);
 
-    let newData = await requests.getDonations(year, users.length == 1 ? users.ID[0] : undefined)
+    let newData = await requests.getDonations(year, users.length == 1 ? users[0] : undefined)
     formatting.setAddressData(await requests.getAllAddresses());
     let mergedData = formatting.mergeDonators(newData.objects);
 

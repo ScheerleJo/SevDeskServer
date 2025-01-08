@@ -27,26 +27,26 @@ if (loadedData) {
     donationsTotal = loadedData.DonationsTotal;
 }
 
-app.get('/', (req, res) => {
-    res.send({
-        "Status": "running",
-        "Message": "Invalid Branch. Use '/fetchNew?year=...' to get all Donations to the input year Use '/saveData?data=...' to save the input Data to a json file"
-    });
-});
+// app.get('/', (req, res) => {
+//     res.send({
+//         "Status": "running",
+//         "Message": "Invalid Branch. Use '/fetchNew?year=...' to get all Donations to the input year Use '/saveData?data=...' to save the input Data to a json file"
+//     });
+// });
 app.get('/kill', (req, res) => {
     console.log('The Server will Shutdown with ExitCode 1');
     res.send({"Status":"shutdown"});
     process.exit()
 });
 
-app.get('/saveToken', (req,res) => { // /saveToken?token=...
+app.get('/api/saveToken', (req,res) => { // /saveToken?token=...
     let response = fileHandler.writeDotEnvToken(req.query.token);
     res.send(response);
     console.log(response);
 })
 
 
-app.get('/fetchNew', (req, res) => { // /fetchNew?year=...
+app.get('/api/fetchNew', (req, res) => { // /fetchNew?year=...
     func.fetchNew(req.query.year).then((data) => {
         year = data.Year;
         donationData = data.Data;
@@ -55,16 +55,16 @@ app.get('/fetchNew', (req, res) => { // /fetchNew?year=...
     });
 })
 
-app.get('/saveData', (req, res) => {
+app.get('/api/saveData', (req, res) => {
     let response = fileHandler.saveStatusToFile(donationData, year, donationsTotal);
     res.send(response);
     console.log(response);
 });
-app.get('/loadData', (req, res) => {
+app.get('/api/loadData', (req, res) => {
     res.send({ "Year": year, "DonationsTotal": donationsTotal, "Data": donationData});
 });
 
-app.get('/deleteDonator', (req, res) => { // /deleteDonator?donatorIDs=1-2-3-...
+app.get('/api/deleteDonator', (req, res) => { // /deleteDonator?donatorIDs=1-2-3-...
     let hasErrorOccured = false;
     let workingData = donationData;
     let userID = func.getMultipleUserIDs(req.query.donatorIDs);
@@ -75,7 +75,7 @@ app.get('/deleteDonator', (req, res) => { // /deleteDonator?donatorIDs=1-2-3-...
     res.send(hasErrorOccured ? {"Status": 400, "Response": "Error: Specified User does not exist"} : workingData);
     donationData = workingData;
 });
-app.get('/moveDonator', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...
+app.get('/api/moveDonator', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...
     let userID = func.getMultipleUserIDs(req.query.donatorIDs);
     for(let i = 0; i < userID.length; i++) {
         if(donationData[userID[i]].Status != 2) donationData[userID[i]].Status ++;
@@ -83,7 +83,7 @@ app.get('/moveDonator', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...
     res.send(donationData);
 })
 
-app.get('/createLatex', (req, res) => {
+app.get('/api/createLatex', (req, res) => {
     let latexElements = [];
     for(const key in donationData) {
         if(donationData[key].Status == 1) latexElements.push(donationData[key]);
@@ -100,7 +100,7 @@ app.get('/createLatex', (req, res) => {
     }
 });
 
-app.get('/refetchUsers', (req, res) => { // /refetchUsers?donatorIDs=1-2-3-...
+app.get('/api/refetchUsers', (req, res) => { // /refetchUsers?donatorIDs=1-2-3-...
     func.refetchUsers(req.query.donatorIDs, year, donationData).then((data) => {
         res.send(data);
     });
