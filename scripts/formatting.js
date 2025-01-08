@@ -35,22 +35,27 @@ function mergeDonators(data) {
             if(!user[id]) {
                 user[id] = template.donator();
                 user[id].id = id;
-                user[id].AcademicTitle = data[i].supplier.academicTitle || "";
+                user[id].status = 'unchecked';
+                user[id].academicTitle = data[i].supplier.academicTitle || "";
                 let correctedNames = checkDonatorName(data[i]);
-                user[id].Surename = correctedNames.surename;
-                user[id].Familyname = correctedNames.familyname
-                user[id].Address = getAddressForContact(id);
-                user[id].TotalSum += parseFloat(data[i].sumNet);
+                if (correctedNames.error) user[id].status = 'error';
+                user[id].surename = correctedNames.surename;
+                user[id].familyname = correctedNames.familyname
+                let address = getAddressForContact(id);
+                if(address.error) user[id].status = 'error';
+                user[id].address = address.newAddress;
             }
-            user[id].Donations.unshift(createNewDonation(data[i]));
+            user[id].totalSum += parseFloat(data[i].sumNet);
+            user[id].donations.unshift(createNewDonation(data[i]));
         } catch (error) {
             console.error(`Information Error: No supplier was linked to the Voucher with the Voucher-ID: ${data[i].id}`);
             let user = template.donator();
             let correctedNames = checkDonatorName(data[i]);
-            user.Surename = correctedNames.surename;
-            user.Familyname = correctedNames.familyname
-            user.TotalSum = data[i].sumNet;
-            user.Donations.unshift(createNewDonation(data[i]));
+            user.status = 'error';
+            user.surename = correctedNames.surename;
+            user.familyname = correctedNames.familyname
+            user.totalSum = data[i].sumNet;
+            user.donations.unshift(createNewDonation(data[i]));
             errorUsers.push(user);            
         }
         allDonatorsSum += parseFloat(data[i].sumNet);
@@ -60,8 +65,8 @@ function mergeDonators(data) {
         user["errorUser" + i] = errorUsers[i];
     }
         for (const key in user) {
-        user[key].SumInWords = convertNumToWord(user[key].TotalSum); //Needs to be done after sum is modified to currency string
-        user[key].TotalSum = correctSum(user[key].TotalSum);
+        user[key].sumInWords = convertNumToWord(user[key].totalSum); //Needs to be done after sum is modified to currency string
+        user[key].totalSum = correctSum(user[key].totalSum);
     }
     if(getDonationsTotal(data) !== allDonatorsSum) console.error("Error: Sum of all Donations does not match the sum of all merged Donators!\nThe sum is currently " + allDonatorsSum + " and should be " + getDonationsTotal(data));
     return user;
@@ -74,8 +79,9 @@ function mergeDonators(data) {
  */
 function createNewDonation(element) {
     let newDonation = template.donation();
-    newDonation.Date = new Date(element.voucherDate).toLocaleDateString('de-DE');
-    newDonation.Sum = correctSum(element.sumNet);
+    newDonation.date = new Date(element.voucherDate).toLocaleDateString('de-DE');
+    newDonation.sum = correctSum(element.sumNet);
+    newDonation.id = element.id;
     return newDonation;
 }
 
@@ -90,12 +96,12 @@ function checkDonatorName(element) {
         let surename = element.supplier.surename || "";
         let name = element.supplier.name || "";
     
-        if (familyname || surename) return { "familyname": familyname, "surename": surename, }
+        if (familyname && surename) return { "familyname": familyname, "surename": surename, error: false }
         console.warn(`Information Warning: Name with ID ${element.supplier.id} might be incomplete!`);
-        if (name) return { "surename": "", "familyname": name } //? not entirely true but this allows easier access to the "backup"-name
+        if (name) return { "surename": "", "familyname": name, error: true} //? not entirely true but this allows easier access to the "backup"-name
     }
     if (element.supplierName) return { "surename": "", "familyname": element.supplierName }
-    return { "familyname": "", "surename": "" }
+    return { "familyname": "", "surename": "", error: true }
 }
 
 /**
@@ -118,18 +124,23 @@ function convertNumToWord(num_f) {
  */
 function getAddressForContact(id) {
     let found = addresses.find((address) => address.contact.id == id);
+    let error = false;
     if(!found) {
         console.error(`Information Error: No matching Address found at ID ${id}!`);
-        return undefined;
+        error = true;
+        return {undefined, error};
     }
-    if(!found.street || !found.zip || !found.city || !found.country.name) console.warn(`Information Warning: Address with ID ${found.id} is incomplete!`);
-    
+    if(!found.street || !found.zip || !found.city || !found.country.name) {
+        console.warn(`Information Warning: Address with ID ${found.id} is incomplete!`); 
+        error = true;
+    }
+
     let newAddress = template.address();
-    newAddress.Street = found.street || "";
-    newAddress.Zip = found.zip || "";
-    newAddress.City = found.city || "";
-    newAddress.Country = found.country.name || "";
-    return newAddress;
+    newAddress.street = found.street || "";
+    newAddress.zip = found.zip || "";
+    newAddress.city = found.city || "";
+    newAddress.country = found.country.name || "";
+    return {newAddress, error};
 }
 
 /**

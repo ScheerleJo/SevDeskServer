@@ -1,6 +1,7 @@
 module.exports = {
     fetchNew,
-    refetchUsers,
+    refetchUser,
+    addNewUsers,
     getMultipleUserIDs
 }
 
@@ -20,36 +21,39 @@ async function fetchNew(year) {
     let mergedData = await formatting.mergeDonators(data.objects);
     let actualSum = await formatting.getDonationsTotal(data.objects);
     return {
-        "Year": year,
-        "DonationsTotal": formatting.correctSum(actualSum),
-        "Data": mergedData,
-        "Total": mergedData.length
+        "year": year,
+        "donationsTotal": formatting.correctSum(actualSum),
+        "data": mergedData,
+        "total": mergedData.length
     }
 }
 
 /**
- * Refetch specific Users from the API and update the donationData
- * @param {Request} req the request from the frontend
+ * Add new Users from the API and update the donationData 
  * @param {Number} year the year of the donations
  * @param {Array<JSON>} donationData the old data 
  * @returns {Array<JSON>} the updated data
  */
-async function refetchUsers(donatorIDs, year, donationData) {
-    let users = getMultipleUserIDs(donatorIDs);
-
-    let newData = await requests.getDonations(year, users.length == 1 ? users[0] : undefined)
+async function addNewUsers(year, donationData) {
+    let newData = await requests.getDonations(year)
     formatting.setAddressData(await requests.getAllAddresses());
     let mergedData = formatting.mergeDonators(newData.objects);
 
     //Indexes for new elements in old 'donationData'-Array
-    for (let i = 0; i < users.length; i++) {
-        if(!mergedData[users[i]]) {
-            console.error('User with ID ' + users[i] + ' not found in new Data');
-            continue;
+    for (let i = 0; i < mergedData.length; i++) {
+        if (!donationData.includes(mergedData[i])) {
+            donationData.push(mergedData[i]);
         }
-        donationData[users[i]] = mergedData[users[i]];
     }
     return donationData;    
+}
+
+async function refetchUser(year, user, donationData) {
+    let userID = parseInt(user);
+    let data = await requests.getDonations(year, user);
+    let mergedData = await formatting.mergeDonators(data.objects);
+    donationData[userID] = mergedData;
+    return donationData;
 }
 
 /**

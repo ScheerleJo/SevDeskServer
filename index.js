@@ -22,9 +22,9 @@ let donationData, year, donationsTotal;
 let loadedData = fileHandler.loadStatusFromFile();
 
 if (loadedData) {
-    donationData = loadedData.Data;
-    year = loadedData.Year;
-    donationsTotal = loadedData.DonationsTotal;
+    donationData = loadedData.data;
+    year = loadedData.year;
+    donationsTotal = loadedData.donationsTotal;
 }
 
 // app.get('/', (req, res) => {
@@ -33,6 +33,9 @@ if (loadedData) {
 //         "Message": "Invalid Branch. Use '/fetchNew?year=...' to get all Donations to the input year Use '/saveData?data=...' to save the input Data to a json file"
 //     });
 // });
+app.get('/ping', (req, res) => {
+    res.send({"Status":"pong"});
+});
 app.get('/kill', (req, res) => {
     console.log('The Server will Shutdown with ExitCode 1');
     res.send({"Status":"shutdown"});
@@ -48,9 +51,9 @@ app.get('/api/saveToken', (req,res) => { // /saveToken?token=...
 
 app.get('/api/fetchNew', (req, res) => { // /fetchNew?year=...
     func.fetchNew(req.query.year).then((data) => {
-        year = data.Year;
-        donationData = data.Data;
-        donationsTotal = data.DonationsTotal;
+        year = data.year;
+        donationData = data.data;
+        donationsTotal = data.donationsTotal;
         res.send(data);
     });
 })
@@ -64,21 +67,11 @@ app.get('/api/loadData', (req, res) => {
     res.send({ "Year": year, "DonationsTotal": donationsTotal, "Data": donationData});
 });
 
-app.get('/api/deleteDonator', (req, res) => { // /deleteDonator?donatorIDs=1-2-3-...
-    let hasErrorOccured = false;
-    let workingData = donationData;
-    let userID = func.getMultipleUserIDs(req.query.donatorIDs);
-    for(let i = 0; i < userID.length; i++) {
-        if(donationData[userID[i]]) delete workingData[userID[i]];
-        else hasErrorOccured = true;
-    }
-    res.send(hasErrorOccured ? {"Status": 400, "Response": "Error: Specified User does not exist"} : workingData);
-    donationData = workingData;
-});
-app.get('/api/moveDonator', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...
-    let userID = func.getMultipleUserIDs(req.query.donatorIDs);
-    for(let i = 0; i < userID.length; i++) {
-        if(donationData[userID[i]].Status != 2) donationData[userID[i]].Status ++;
+app.get('/api/moveDonator', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...&status=unchecked-checked-unchecked-...
+    let userIDs = func.getMultipleUserIDs(req.query.donatorIDs);
+    let status = req.query.status.split('-');
+    for(let i = 0; i < userIDs.length; i++) {
+        donationData[userIDs[i]].status = status[i];    // unchecked, checked, checkedNotInPool, done, error 
     }
     res.send(donationData);
 })
@@ -86,13 +79,12 @@ app.get('/api/moveDonator', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...
 app.get('/api/createLatex', (req, res) => {
     let latexElements = [];
     for(const key in donationData) {
-        if(donationData[key].Status == 1) latexElements.push(donationData[key]);
+        if(donationData[key].status == 1) latexElements.push(donationData[key]);
     }
     if(latexElements.length == 0) {
         let response = {"Status": 400, "Response": "No Donations to create LaTeX-File"} 
         res.send(response);
         console.log(response);
-        
     } else {
         let response = fileHandler.writeTexDoc(out.createTexDocument(latexElements, year));
         res.send(response);
@@ -100,8 +92,13 @@ app.get('/api/createLatex', (req, res) => {
     }
 });
 
-app.get('/api/refetchUsers', (req, res) => { // /refetchUsers?donatorIDs=1-2-3-...
-    func.refetchUsers(req.query.donatorIDs, year, donationData).then((data) => {
+app.get('/api/refetchUsers', (req, res) => { // /refetchUsers?donatorID=1
+    func.refetchUsers(req.query.donatorID, year, donationData).then((data) => {
+        res.send(data);
+    });
+})
+app.get('/api/addNewUsers', (req, res) => { // /refetchUsers?donatorIDs=1-2-3-...
+    func.addNewUsers(year, donationData).then((data) => {
         res.send(data);
     });
 })

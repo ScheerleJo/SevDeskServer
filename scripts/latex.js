@@ -56,18 +56,18 @@ function createTexDocument(data, year) {
  * @returns {String} the latex-letter as a string
  */
 function createLetter(element, year, letter) {
-    let surename = element.AcademicTitle ? element.AcademicTitle + ' ' + element.Surename : element.Surename;
+    let surename = element.academicTitle ? element.academicTitle + ' ' + element.surename : element.surename;
     return mustache.render(letter, {
         surename: surename,
-        familyname: element.Familyname,
-        street: element.Address.Street,
-        zip: element.Address.Zip,
-        city: element.Address.City,
-        country: element.Address.Country,
-        totalsum: element.TotalSum,
-        suminwords: element.SumInWords,
+        familyname: element.familyname,
+        street: element.address.street,
+        zip: element.address.zip,
+        city: element.address.city,
+        country: element.address.country,
+        totalsum: element.totalSum,
+        suminwords: element.sumInWords,
         timeframe: `01.01.${year} \u2012 31.12.${year}`,
-        donations: createTexDonations(element.Donations)
+        donations: createTexDonations(element.sonations)
     });
 }
 
@@ -81,10 +81,10 @@ function createTexDonations(donations){
     const donationTemplate = config.get('donationScheme');
     for(let i = 0; i < donations.length; i++){
         donationString += mustache.render(donationTemplate, {
-            donationdate: donations[i].Date,
-            donationtype: donations[i].Type,
-            donationtax: donations[i].Waive,
-            donationsum: donations[i].Sum
+            donationdate: donations[i].date,
+            donationtype: donations[i].type,
+            donationtax: donations[i].waive,
+            donationsum: donations[i].sum
         });
     }
     return donationString;
@@ -106,11 +106,12 @@ function checkValue(element) {
  * @returns {JSON} the element with checked values
  */
 function checkDonatorElement(element) {
-    element.AcademicTitle = checkValue(element.AcademicTitle);
-    element.Surename = checkValue(element.Surename);
-    element.Familyname = checkValue(element.Familyname);
-    element.Address.Street = checkValue(element.Address.Street);
-    element.Address.ZipCity = checkValue(element.Address.ZipCity);
-    element.Address.Country = checkValue(element.Address.Country);
+    element.academicTitle = checkValue(element.academicTitle);
+    element.surename = checkValue(element.surename);
+    element.familyname = checkValue(element.familyname);
+    element.address.ctreet = checkValue(element.address.street);
+    element.address.zip = checkValue(element.address.zip);
+    element.address.city = checkValue(element.address.city);
+    element.address.country = checkValue(element.address.country);
     return element;
 }

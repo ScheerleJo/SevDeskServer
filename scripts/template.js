@@ -4,31 +4,31 @@ class Template {
     donation() {
         return {
             "id": 0,
-            "Date": new Date(),
-            "Type": "Geldzuwendung",
-            "Waive": "nein",
-            "Sum": ""
+            "date": new Date(),
+            "type": "Geldzuwendung",
+            "waive": "nein",
+            "sum": ""
         }
     }
     donator() {
         return {
             "id": 0,
-            "Status": 'unchecked',
-            "AcademicTitle": "",
-            "Surename": "",
-            "Familyname": "",
-            "Address": {},
-            "TotalSum": 0,
-            "SumInWords": "",
-            "Donations": []
+            "status": 'unchecked',
+            "academicTitle": "",
+            "surename": "",
+            "familyname": "",
+            "address": {},
+            "totalSum": 0,
+            "sumInWords": "",
+            "donations": []
         }
     }
     address() {
         return {
-            "Street": "",
-            "Zip": "",
-            "City": "",
-            "Country": ""
+            "street": "",
+            "zip": "",
+            "city": "",
+            "country": ""
         }
     }
 }
