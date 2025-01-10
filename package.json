@@ -25,7 +25,6 @@
     "axios": "^1.7.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "downloads-folder": "^3.0.3",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
     "mustache": "^4.2.0",

@@ -1,7 +1,6 @@
 DocumentType = module;
 
 const fs = require('fs');
-const downloads = require('downloads-folder');
 const path = require('path');
 const os = require('os');
 const config = new (require('./configuration'))();
@@ -24,7 +23,7 @@ module.exports = {
  */
 function saveStatusToFile(arrayData, year, donationsTotal) {
     let json = JSON.stringify({"year": year, "donationsTotal": donationsTotal, "data": arrayData });
-    let filePath = config.get('save-filePath') || __dirname + "\\data.json";
+    let filePath = path.join(__dirname, "data.json");
     try {
         fs.writeFileSync(filePath, json);
         return {"Status": 201,"Response": "Data Saved Successfully!"};
@@ -38,7 +37,7 @@ function saveStatusToFile(arrayData, year, donationsTotal) {
  * @returns {Array<JSON>} the data
  */
 function loadStatusFromFile() {
-    let filePath = config.get('save-filePath') || __dirname + "\\data.json";
+    let filePath = path.join(__dirname, "data.json");
     if(!fs.existsSync(filePath)) {
         console.info('File info: No status could be loaded from: ' + filePath);
         return undefined;
