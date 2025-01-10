@@ -49,11 +49,22 @@ async function addNewUsers(year, donationData) {
 }
 
 async function refetchUser(year, user, donationData) {
-    let userID = parseInt(user);
-    let data = await requests.getDonations(year, user);
-    let mergedData = await formatting.mergeDonators(data.objects);
-    donationData[userID] = mergedData;
-    return donationData;
+    formatting.setAddressData(await requests.getAllAddresses());
+    if(!user.includes(('errorUser'))) {
+        let userID = parseInt(user);
+        let data = await requests.getDonations(year, user);
+        let mergedData = await formatting.mergeDonators(data.objects);
+        donationData[userID] = mergedData[userID];
+        return donationData;
+    } else {
+        let data = await requests.getDonations(year);
+        for(let i = 0; i<data.objects.length; i++) {
+            if(data.objects[i].id ==donationData[user].donations[0].id) {
+                delete donationData[user];
+                return await formatting.mergeDonators([data.objects[i]], donationData);
+            }
+        }
+    }
 }
 
 /**

@@ -67,7 +67,7 @@ function createLetter(element, year, letter) {
         totalsum: element.totalSum,
         suminwords: element.sumInWords,
         timeframe: `01.01.${year} \u2012 31.12.${year}`,
-        donations: createTexDonations(element.sonations)
+        donations: createTexDonations(element.donations)
     });
 }
 

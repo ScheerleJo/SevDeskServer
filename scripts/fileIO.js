@@ -11,7 +11,8 @@ module.exports = {
     loadStatusFromFile,
     getTexTemplate,
     writeTexDoc,
-    writeDotEnvToken
+    writeDotEnvToken,
+    checkTexFile
 }
 
 /**
@@ -22,7 +23,7 @@ module.exports = {
  * @returns {Number} the status code of the operation
  */
 function saveStatusToFile(arrayData, year, donationsTotal) {
-    let json = JSON.stringify({"Year": year, "DonationsTotal": donationsTotal, "Data": arrayData });
+    let json = JSON.stringify({"year": year, "donationsTotal": donationsTotal, "data": arrayData });
     let filePath = config.get('save-filePath') || __dirname + "\\data.json";
     try {
         fs.writeFileSync(filePath, json);
@@ -60,7 +61,7 @@ function writeTexDoc(data) {
     let filePath;
     let inject = 0;
     do {
-        filePath = path.join(downloads(), `/main${inject == 0 ? '': inject}.tex`)
+        filePath = `./main${inject == 0 ? '': inject}.tex`;
         inject ++;
     } while(fs.existsSync(filePath));
     try {
@@ -80,6 +81,16 @@ function getTexTemplate() {
     let filePath = path.resolve(process.cwd(), config.get('templatePath'));
     if (fs.existsSync(filePath)) return fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' });
     else throw new Error('LaTeX-Template does not exist');
+}
+
+/**
+ * Check if the LaTeX File exists
+ * @returns {String} the path to the LaTeX File
+ */
+function checkTexFile() {
+    let filePath = path.resolve(process.cwd(), './main.tex');
+    if (fs.existsSync(filePath)) return filePath;
+    else throw new Error('LaTeX-File does not exist');
 }
 
 /**

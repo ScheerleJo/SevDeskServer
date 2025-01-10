@@ -25,28 +25,28 @@ function setAddressData(APIData) {
  * @param {Array<JSON>} data the data from the API
  * @returns {Array<JSON>} the merged data 
  */
-function mergeDonators(data) {
+function mergeDonators(data, oldData = undefined) {
     let errorUsers = [];
     let allDonatorsSum = 0;
-    let user = {};
+    let users = oldData || {};
     for(let i = 0; i < data.length; i++) {
         try{
             const id = data[i].supplier.id;
-            if(!user[id]) {
-                user[id] = template.donator();
-                user[id].id = id;
-                user[id].status = 'unchecked';
-                user[id].academicTitle = data[i].supplier.academicTitle || "";
+            if(!users[id]) {
+                users[id] = template.donator();
+                users[id].id = id;
+                users[id].status = 'unchecked';
+                users[id].academicTitle = data[i].supplier.academicTitle || "";
                 let correctedNames = checkDonatorName(data[i]);
-                if (correctedNames.error) user[id].status = 'error';
-                user[id].surename = correctedNames.surename;
-                user[id].familyname = correctedNames.familyname
+                if (correctedNames.error) users[id].status = 'error';
+                users[id].surename = correctedNames.surename;
+                users[id].familyname = correctedNames.familyname
                 let address = getAddressForContact(id);
-                if(address.error) user[id].status = 'error';
-                user[id].address = address.newAddress;
+                if(address.error) users[id].status = 'error';
+                users[id].address = address.newAddress;
             }
-            user[id].totalSum += parseFloat(data[i].sumNet);
-            user[id].donations.unshift(createNewDonation(data[i]));
+            users[id].totalSum += parseFloat(data[i].sumNet);
+            users[id].donations.unshift(createNewDonation(data[i]));
         } catch (error) {
             console.error(`Information Error: No supplier was linked to the Voucher with the Voucher-ID: ${data[i].id}`);
             let user = template.donator();
@@ -62,14 +62,16 @@ function mergeDonators(data) {
     }
     console.log("Count of users with errors: " + errorUsers.length);
     for(let i = 0; i < errorUsers.length; i++) {
-        user["errorUser" + i] = errorUsers[i];
+        users["errorUser" + i] = errorUsers[i];
     }
-        for (const key in user) {
-        user[key].sumInWords = convertNumToWord(user[key].totalSum); //Needs to be done after sum is modified to currency string
-        user[key].totalSum = correctSum(user[key].totalSum);
+    for (const key in users) {
+    if(!users[key].sumInWords){
+        users[key].sumInWords = convertNumToWord(users[key].totalSum); //Needs to be done before sum is modified to currency string
+        users[key].totalSum = correctSum(users[key].totalSum);
+    }
     }
     if(getDonationsTotal(data) !== allDonatorsSum) console.error("Error: Sum of all Donations does not match the sum of all merged Donators!\nThe sum is currently " + allDonatorsSum + " and should be " + getDonationsTotal(data));
-    return user;
+    return users;
 }
 
 /**

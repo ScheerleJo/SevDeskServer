@@ -27,12 +27,6 @@ if (loadedData) {
     donationsTotal = loadedData.donationsTotal;
 }
 
-// app.get('/', (req, res) => {
-//     res.send({
-//         "Status": "running",
-//         "Message": "Invalid Branch. Use '/fetchNew?year=...' to get all Donations to the input year Use '/saveData?data=...' to save the input Data to a json file"
-//     });
-// });
 app.get('/ping', (req, res) => {
     res.send({"Status":"pong"});
 });
@@ -64,10 +58,10 @@ app.get('/api/saveData', (req, res) => {
     console.log(response);
 });
 app.get('/api/loadData', (req, res) => {
-    res.send({ "Year": year, "DonationsTotal": donationsTotal, "Data": donationData});
+    res.send({ "year": year, "donationsTotal": donationsTotal, "data": donationData});
 });
 
-app.get('/api/moveDonator', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...&status=unchecked-checked-unchecked-...
+app.get('/api/moveDonators', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...&status=unchecked-checked-unchecked-...
     let userIDs = func.getMultipleUserIDs(req.query.donatorIDs);
     let status = req.query.status.split('-');
     for(let i = 0; i < userIDs.length; i++) {
@@ -77,27 +71,34 @@ app.get('/api/moveDonator', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...
 })
 
 app.get('/api/createLatex', (req, res) => {
-    let latexElements = [];
+    let latexElements = {};
     for(const key in donationData) {
-        if(donationData[key].status == 1) latexElements.push(donationData[key]);
+        if(donationData[key].status == 'checked') latexElements[key] = donationData[key];
     }
-    if(latexElements.length == 0) {
+    if(!latexElements) {
         let response = {"Status": 400, "Response": "No Donations to create LaTeX-File"} 
         res.send(response);
         console.log(response);
     } else {
+
         let response = fileHandler.writeTexDoc(out.createTexDocument(latexElements, year));
         res.send(response);
         console.log(response);
     }
 });
+app.get('/api/getLatex', (req, res) => {
+    console.log('Trying to download the LaTeX-File...');
+    if(fileHandler.checkTexFile()) res.download(__dirname + '/main.tex');
+    else res.send({"Status": 404, "Response": "No LaTeX-File found"});
+});
 
-app.get('/api/refetchUsers', (req, res) => { // /refetchUsers?donatorID=1
-    func.refetchUsers(req.query.donatorID, year, donationData).then((data) => {
+
+app.get('/api/refetchDonator', (req, res) => { // /refetchUsers?donatorID=1
+    func.refetchUser(year, req.query.donatorID, donationData).then((data) => {
         res.send(data);
     });
 })
-app.get('/api/addNewUsers', (req, res) => { // /refetchUsers?donatorIDs=1-2-3-...
+app.get('/api/addNewDonators', (req, res) => { // /refetchUsers?donatorIDs=1-2-3-...
     func.addNewUsers(year, donationData).then((data) => {
         res.send(data);
     });
