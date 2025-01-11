@@ -1,43 +1,34 @@
-const config = require('./scripts/configHandling')
-const requests = require('./scripts/requests');
-const formatting = require('./scripts/formatting');
-const sort = require('./scripts/sorting');
-const fileHandler = require('./scripts/fileHandling');
-const urlHandler = require('./scripts/urlHandling');
-const out = require('./scripts/output');
-
-const process = require('node:process');
+const config = new (require('./scripts/configuration'))();
+const fileHandler = require('./scripts/fileIO');
+const out = require('./scripts/latex');
+const func = require('./scripts/functions');
 const express = require('express');
-const cors = require('cors');
 var app = express();
 
-const VERSION = config.VERSION;
-const PORT = config.PORT;
+const VERSION = config.getVersion();
+const PORT = config.getPort();
 
 console.log(`SevDesk-Extension for Theologische Fernschule e.V. running on Version: ${VERSION}`)
 console.log('Trying to start the server...')
 
-let corsOptions = {
+
+// Options for the FrontEnd to function properly
+app.use(require('cors')({
     origin: '*',
     optionsSuccessStatus: 200,
     methods: "GET, PUT, POST"
+}));
+let donationData, year, donationsTotal;
+let loadedData = fileHandler.loadStatusFromFile();
+
+if (loadedData) {
+    donationData = loadedData.data;
+    year = loadedData.year;
+    donationsTotal = loadedData.donationsTotal;
 }
 
-// Options for the FrontEnd to function properly
-app.use(cors(corsOptions));
-let donationData, year;
-let loadedData =  fileHandler.loadStatusFromFile();
-
-if (loadedData != undefined) {
-    donationData = loadedData.Data;
-    year = loadedData.Year;
-}
-
-app.get('/', (req, res) => {
-    res.send({
-        "Status": "running",
-        "Message": "Invalid Branch. Use '/fetchNew?year=...' to get all Donations to the input year Use '/saveData?data=...' to save the input Data to a json file"
-    });
+app.get('/ping', (req, res) => {
+    res.send({"Status":"pong"});
 });
 app.get('/kill', (req, res) => {
     console.log('The Server will Shutdown with ExitCode 1');
@@ -45,84 +36,72 @@ app.get('/kill', (req, res) => {
     process.exit()
 });
 
-app.get('/saveToken', (req,res) => {
-    let token = urlHandler.getToken(req.url);
-    fileHandler.writeDotEnvToken(token);
-    res.send({
-        "Status": 200
-    })
+app.get('/api/saveToken', (req,res) => { // /saveToken?token=...
+    let response = fileHandler.writeDotEnvToken(req.query.token);
+    res.send(response);
+    console.log(response);
 })
 
-app.get('/fetchNew', (req, res) => {
-    year = urlHandler.getYearFromQuery(req.url)
-    requests.getDonations(year, () => {
-        console.log('DATA GATHERING (Donations) COMPLETE')
-        formatting.setDonationData(requests.getData());
-        requests.getAllAddresses(() => {
-            console.log('DATA GATHERING (Addresses) COMPLETE')
-            formatting.setAddressData(requests.getAddressData());
-            donationData = formatting.newFormat();
-            console.log('DATA PUSHED SUCCESSFULLY');
-            res.send({
-                "Year": year,
-                "Data": donationData
-            });
-        })
-    })
-})
 
-app.get('/saveData', (req, res) => {
-    let response = fileHandler.saveStatusToFile(donationData, year);
-    res.send({"Status": response});     //  Send Status Code (200 for everything okay)
-    console.log('SAVE-DATA STATUS: ' + response)
-});
-app.get('/loadData', (req, res) => {
-    res.send({
-        "Year": year,
-        "Data": donationData
+app.get('/api/fetchNew', (req, res) => { // /fetchNew?year=...
+    func.fetchNew(req.query.year).then((data) => {
+        year = data.year;
+        donationData = data.data;
+        donationsTotal = data.donationsTotal;
+        res.send(data);
     });
+})
+
+app.get('/api/saveData', (req, res) => {
+    let response = fileHandler.saveStatusToFile(donationData, year, donationsTotal);
+    res.send(response);
+    console.log(response);
+});
+app.get('/api/loadData', (req, res) => {
+    res.send({ "year": year, "donationsTotal": donationsTotal, "data": donationData});
 });
 
-app.get('/deleteItem', (req, res) => { ///deleteItem?donatorIndex=...(num)&donationIndex=...(num)&deleteAll=...(true/false)
-    sort.setDonationData(donationData);
-    let returnValue = sort.deleteItemAtIndex(urlHandler.getDeleteItem(req.url))
-    if (returnValue == 400) res.send({"Status": 400, "response": "Error while deleting Item"}); 
-    else {
-        donationData = returnValue;
-        res.send(donationData);
+app.get('/api/moveDonators', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...&status=unchecked-checked-unchecked-...
+    let userIDs = func.getMultipleUserIDs(req.query.donatorIDs);
+    let status = req.query.status.split('-');
+    for(let i = 0; i < userIDs.length; i++) {
+        donationData[userIDs[i]].status = status[i];    // unchecked, checked, checkedNotInPool, done, error 
     }
-});
-app.get('/moveItem', (req, res) => {
-    sort.setDonationData(donationData);
-    let index = urlHandler.getMoveItem(req.url);
-    if(donationData[index].Status != 2) donationData[index].Status ++;
     res.send(donationData);
 })
 
-app.get('/createLatex', (req, res) => {
-    out.setYear(year);
-    let latexElements = [];
-    for(let i = 0; i < donationData.length; i++) {
-        if(donationData[i].Status == 1) {
-            latexElements.push(donationData[i]);
-        }
+app.get('/api/createLatex', (req, res) => {
+    let latexElements = {};
+    for(const key in donationData) {
+        if(donationData[key].status == 'checked') latexElements[key] = donationData[key];
     }
-    out.setData(latexElements);
-    let output = out.createTexDoc();
-    let success = fileHandler.writeTexDoc(output);
-    if (success != 200) res.send(success); 
-    else  {
-        res.send({
-            "Status": 200,
-            "response": "LaTeX File Created Successfully!"
-        })
-        console.log("LaTeX-FILE SUCCESSFULL CREATED")
+    if(!latexElements) {
+        let response = {"Status": 400, "Response": "No Donations to create LaTeX-File"} 
+        res.send(response);
+        console.log(response);
+    } else {
+
+        let response = fileHandler.writeTexDoc(out.createTexDocument(latexElements, year));
+        res.send(response);
+        console.log(response);
     }
 });
+app.get('/api/getLatex', (req, res) => {
+    console.log('Trying to download the LaTeX-File...');
+    if(fileHandler.checkTexFile()) res.download(__dirname + '/main.tex');
+    else res.send({"Status": 404, "Response": "No LaTeX-File found"});
+});
 
-app.get('/reloadUsers', (req, res) =>{
-    let users = urlHandler.getReloadUsers(req.url);
 
+app.get('/api/refetchDonator', (req, res) => { // /refetchUsers?donatorID=1
+    func.refetchUser(year, req.query.donatorID, donationData).then((data) => {
+        res.send(data);
+    });
+})
+app.get('/api/addNewDonators', (req, res) => { // /refetchUsers?donatorIDs=1-2-3-...
+    func.addNewUsers(year, donationData).then((data) => {
+        res.send(data);
+    });
 })
 
 app.listen(PORT, function(){  

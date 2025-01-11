@@ -1,0 +1,20 @@
+{
+  "company": {
+    "address": {
+      "street": "Prinz-Carl-Anlage 24",
+      "city": "Worms",
+      "zip": "67547"
+    },
+    "name": "Theologische Fernschule e.\\,V.",
+    "phone": "06241 / 200 331",
+    "email": "info@bfu-online.org",
+    "url": "www.theologischefernschule.de",
+    "bank": {
+      "name": "Evangelische Bank",
+      "iban": "IBAN DE65\\,5206\\,0410\\,0004\\,0012\\,49",
+      "bic": "GENODEF1EK1"
+    }
+  },
+  "donationScheme": "<<donationdate>> & <<donationtype>> & <<donationtax>> & <<donationsum>> \\\\\n",
+  "templatePath": "LaTeX-Templates/template.tex"
+}

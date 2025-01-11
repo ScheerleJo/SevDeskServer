@@ -1,0 +1,106 @@
+\documentclass[fontsize=11pt, twoside]{scrlttr2}
+
+%%%%%%%%%%%%%%%%%%%%
+%% Standardpakete %%
+%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[ngerman]{babel} % deutsche Sprache
+\usepackage{graphicx} % Benötigt um Grafiken einfügen zu können
+\usepackage{booktabs} % schönere Tabellen
+
+%%%%%%%%%%%%%%%%
+%% Schriftart %%
+%%%%%%%%%%%%%%%%
+
+\usepackage{fontspec} % Packet, um externe Schriften laden zu können
+\renewcommand{\familydefault}{\sfdefault} % Setzt den sansserif-Font als Standardschrift
+\setsansfont[ % Definiert Sarabun als sansserif-Font
+    %Path=Settings/,
+    BoldFont=Sarabun-Bold.ttf,
+    ItalicFont=Sarabun-Italic.ttf
+]{Sarabun-Regular.ttf}
+\usepackage{microtype} % verbessert Typographie
+
+
+
+
+\KOMAoptions{
+    DIV=12,
+    fromlogo, %Logo ein
+    fromalign=right, %Absender rechts
+    fromphone, % Absender Telefon anzeigen
+    fromemail, % Absender E-Mail anzeigen 
+    fromurl, % Absender Webseite anzeigen
+    symbolicnames=on, % Symbole bei Telefon und E-Mail
+    refline=nodate, %kein Datum 
+    parskip=half
+}
+
+\setplength{refaftervskip}{0pt}
+\setplength{subjectaftervskip}{1em}
+%\setplength{sigbeforevskip}{2em}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Angaben zum Absender (Empfänger der Zuwendung)  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setkomavar{fromaddress}{<<fromstreet>>\\<<fromzipcode>> <<fromcity>>}
+\setkomavar{frombank}{IBAN <<fromiban>>\\<<frombankname>>\\BIC <<frombic>>}
+\setkomavar{fromemail}{<<fromemail>>}
+\setkomavar{fromlogo}{\includegraphics[width=8cm]{tfs 231213 Logos für Briefkopf.pdf}}
+\setkomavar{fromname}{<<fromname>>}
+\setkomavar{fromphone}{<<fromphone>>}
+\setkomavar{fromurl}{<<fromurl>>}
+\setkomavar{fromzipcode}{<<fromzipcode>>}
+
+\setkomavar{subject}{Sammelbestätigung über Geldzuwendungen}
+
+\setkomavar{signature}{<<fromcity>>, <<date>>, <<fromname>>}
+
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%
+%% Briefe ab hier %%
+%%%%%%%%%%%%%%%%%%%%
+
+<<LETTERSTART>>
+\begin{letter}{<<surename>> <<familyname>>\\<<street>>\\<<zip>> <<city>>} % HIER Anschrift nach dem Muster VORNAME NACHNAME\\ANSCHRIFT\\PLZ ORT\\LAND (wenn nicht Deutschland)
+
+\opening{im Sinne des § 10 b des Einkommensteuergesetzes an eine der in § 5 Abs. 1 Nr. 9 des Körperschaftsteuergesetzes bezeichneten Körperschaften, Personenvereinigungen oder Vermögensmassen}
+
+Name und Anschrift des Zuwendenden:
+
+\textbf{<<surename>> <<familyname>>, <<street>>, <<zip>> <<city>>} % HIER Anschrift nach dem Muster VORNAME NACHNAME, ANSCHRIFT, PLZ ORT, LAND (wenn nicht Deutschland)
+
+Betrag der Zuwendung in Ziffern/in Buchstaben/Zeitraum der Sammelbestätigung:
+
+\textbf{<<totalsum>>/<<suminwords>>/<<timeframe>>} % HIER GESAMTBETRAG in Ziffern/in Buchstaben/Zeitraum
+
+Wir sind wegen Förderung religiöser Zwecke i.S.d. § 51 ff. AO nach dem letzten uns zugegangenen Freistellungsbescheides des Finanzamts Worms-Kirchheimbolanden, St.Nr.: 44/673/00521 vom 09.11.2021 nach § 5 Abs. 1 Nr. 9 des Körperschaftsteuergesetzes von der Körperschaftssteuer und nach § 3 Nr. 6 des Gewerbesteuergesetzes von der Gewerbesteuer befreit.
+
+Es wird bestätigt, dass es sich nicht um einen Mitgliedsbeitrag handelt, dessen Abzug nach § 10b Abs. 1 des Einkommensteuergesetzes ausgeschlossen ist.
+
+Es wird bestätigt, dass über die in der Gesamtsumme enthaltenen Zuwendungen keine weiteren Bestätigungen, weder formelle Zuwendungsbestätigungen noch Beitragsquittungen oder Ähnliches ausgestellt wurden und werden.
+\enlargethispage{5\baselineskip}
+\closing{}
+
+\ps\footnotesize
+\textbf{Hinweis:} Wer vorsätzlich oder grob fahrlässig eine unrichtige Zuwendungsbestätigung erstellt oder veranlasst, dass Zuwendungen nicht zu den in der Zuwendungsbestätigung angegebenen steuerbegünstigten Zwecken verwendet werden, haftet für die entgangene Steuer (§ 10b Abs. 4 EStG, § 9 Abs. 3 KStG, § 9 Nr. 5 GewStG). Diese Bestätigung wird nicht als Nachweis für die steuerliche Berücksichtigung der Zuwendung anerkannt, wenn das Datum des Freistellungsbescheides länger als 5 Jahre bzw. das Datum der Feststellung der Einhaltung der satzungsmäßigen Voraussetzungen nach § 60a Abs. 1 AO länger als 3 Jahre seit Ausstellung des Bescheides zurückliegt (§ 63 Abs. 5 AO).
+
+\newpage\normalsize
+\textbf{Anlage zur Sammelbestätigung}
+
+\noindent\begin{tabular}{lllr}
+Datum der Zuwendung & Art der Zuwendung & Verzicht auf Erstattung & Betrag \\ \addlinespace
+<<donations>>
+\end{tabular}
+
+\end{letter}
+
+<<LETTEREND>>
+%%%%%%%%%%%%
+%% Footer %%
+%%%%%%%%%%%%
+
+\end{document}
