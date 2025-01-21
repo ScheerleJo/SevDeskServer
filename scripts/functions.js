@@ -23,7 +23,7 @@ async function fetchNew(year) {
         "year": year,
         "donationsTotal": formatting.correctSum(actualSum),
         "data": mergedData,
-        "total": mergedData.length
+        "total": mergedData.length //Deprecated
     }
 }
 

@@ -129,8 +129,7 @@ function getAddressForContact(id) {
     let error = false;
     if(!found) {
         console.error(`Information Error: No matching Address found at ID ${id}!`);
-        error = true;
-        return {undefined, error};
+        return {undefined, error: true};
     }
     if(!found.street || !found.zip || !found.city || !found.country.name) {
         console.warn(`Information Warning: Address with ID ${found.id} is incomplete!`); 
@@ -153,7 +152,6 @@ function getAddressForContact(id) {
 function correctSum(sum_f){
     if (typeof sum_f == 'string') sum_f = parseFloat(sum_f);
     return sum_f.toLocaleString('de-DE', { style: 'currency',  currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2});
-    // console.error("Value: " + sum_f + ", DataTye: " + typeof sum_f + ", Corrected: " + sum_f.toLocaleString('de-DE', { style: 'currency',  currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2}));
 }
 
 /**
