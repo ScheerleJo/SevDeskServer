@@ -1,8 +1,7 @@
 module.exports = {
     fetchNew,
     refetchUser,
-    addNewUsers,
-    getMultipleUserIDs
+    addNewUsers
 }
 
 const requests = require('./requests');
@@ -53,7 +52,8 @@ async function refetchUser(year, user, donationData) {
     if(!user.includes(('errorUser'))) {
         let userID = parseInt(user);
         let data = await requests.getDonations(year, user);
-        let mergedData = await formatting.mergeDonators(data.objects);
+        delete donationData[user];
+        let mergedData = await formatting.mergeDonators(data.objects, donationData);
         donationData[userID] = mergedData[userID];
         return donationData;
     } else {
@@ -65,17 +65,4 @@ async function refetchUser(year, user, donationData) {
             }
         }
     }
-}
-
-/**
- * Split multiple concatenated UserIDs from a request 
- * @param {String} string concatenated ids from request
- * @returns {Array<Number>}
- */
-function getMultipleUserIDs(ids) {
-    ids = ids.split('-');
-    for(let i = 0; i < ids.length; i++) {
-        if(typeof(ids[i]) != "number") ids[i] = parseInt(ids[i]);
-    }
-    return ids;
 }

@@ -26,9 +26,9 @@ function saveStatusToFile(arrayData, year, donationsTotal) {
     let filePath = path.join(__dirname, "data.json");
     try {
         fs.writeFileSync(filePath, json);
-        return {"Status": 201,"Response": "Data Saved Successfully!"};
+        return {"status": 201,"response": "Data Saved Successfully!"};
     } catch (error) {
-        return {"Status": 500 ,"Response": "Error while saving the data" + error};
+        return {"status": 500 ,"response": "Error while saving the data" + error};
     }
 }
 
@@ -66,9 +66,9 @@ function writeTexDoc(data) {
     try {
         fs.writeFileSync(filePath, data);
         console.log("LaTeX-FILE SUCCESSFULL CREATED")
-        return {"Status": 201,"Response": "LaTeX-File Created Successfully!"};
+        return {"status": 201, "response": "LaTeX-File Created Successfully!"};
     } catch (error) {
-        return {"Status": 500 ,"Response": "Error while creating LaTeX-File" + error};
+        return {"status": 500, "response": "Error while creating LaTeX-File" + error};
     }
 }
 
@@ -103,6 +103,6 @@ function writeDotEnvToken(token) {
 
     //Check if the token was saved correctly
     require('dotenv').config();
-    if(process.env.API_TOKEN == token) return {"Status": 200,"Response": "Token saved successfully!"};
-    else return {"Status": 500 ,"Response": "An error occured while saving the token"};
+    if(process.env.API_TOKEN == token) return {"status": 200,"response": "Token saved successfully!"};
+    else return {"status": 500 ,"response": "An error occured while saving the token"};
 }

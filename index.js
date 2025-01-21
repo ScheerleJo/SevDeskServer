@@ -28,22 +28,24 @@ if (loadedData) {
 }
 
 app.get('/ping', (req, res) => {
-    res.send({"Status":"pong"});
+    console.log("Ping from " + req.ip);
+    res.send({"status":"pong"});
 });
 app.get('/kill', (req, res) => {
     console.log('The Server will Shutdown with ExitCode 1');
-    res.send({"Status":"shutdown"});
+    res.send({"status":"shutdown"});
     process.exit()
 });
 
 app.get('/api/saveToken', (req,res) => { // /saveToken?token=...
+    console.log('Trying to save the new API-Token...');
     let response = fileHandler.writeDotEnvToken(req.query.token);
     res.send(response);
     console.log(response);
 })
 
-
 app.get('/api/fetchNew', (req, res) => { // /fetchNew?year=...
+    console.log('Fetching new Data for the year: ' + req.query.year);
     func.fetchNew(req.query.year).then((data) => {
         year = data.year;
         donationData = data.data;
@@ -53,54 +55,68 @@ app.get('/api/fetchNew', (req, res) => { // /fetchNew?year=...
 })
 
 app.get('/api/saveData', (req, res) => {
+    console.log('Trying to save the current status...');
     let response = fileHandler.saveStatusToFile(donationData, year, donationsTotal);
-    res.send(response);
+    res.send(response); // {"status": 201, "response": "Data Saved Successfully!"}
     console.log(response);
 });
 app.get('/api/loadData', (req, res) => {
+    console.log('Trying to load the current status...');
+    // let response = fileHandler.loadStatusFromFile();
     res.send({ "year": year, "donationsTotal": donationsTotal, "data": donationData});
 });
 
-app.get('/api/moveDonators', (req, res) => { // /moveDonator?donatorIDs=1-2-3-...&status=unchecked-checked-unchecked-...
-    let userIDs = func.getMultipleUserIDs(req.query.donatorIDs);
-    let status = req.query.status.split('-');
-    for(let i = 0; i < userIDs.length; i++) {
-        donationData[userIDs[i]].status = status[i];    // unchecked, checked, checkedNotInPool, done, error 
-    }
-    res.send(donationData);
+app.get('/api/loadDataFromFile', (req, res) => {
+    console.log('Trying to load the current status...');
+    res.send(fileHandler.loadStatusFromFile());
+});
+
+app.get('/api/moveDonator', (req, res) => { // /moveDonator?donatorID=1&status=checked
+    console.log('Moving User with ID: ' + req.query.donatorID + ' to status: ' + req.query.status);
+    donationData[req.query.donatorID].status = req.query.status;    // unchecked, checked, checkedNotInPool, done, error 
+    res.send({ "year": year, "donationsTotal": donationsTotal, "data": donationData});
 })
 
 app.get('/api/createLatex', (req, res) => {
     let latexElements = {};
-    for(const key in donationData) {
+    for(const key in donationData) { 
         if(donationData[key].status == 'checked') latexElements[key] = donationData[key];
     }
     if(!latexElements) {
-        let response = {"Status": 400, "Response": "No Donations to create LaTeX-File"} 
+        let response = {"status": 400, "response": "No Donations to create LaTeX-File"} 
         res.send(response);
         console.log(response);
     } else {
-
         let response = fileHandler.writeTexDoc(out.createTexDocument(latexElements, year));
-        res.send(response);
+        res.send(response); // {"status": 201, "response": "LaTeX-File Created Successfully!"}
         console.log(response);
     }
 });
 app.get('/api/getLatex', (req, res) => {
     console.log('Trying to download the LaTeX-File...');
     if(fileHandler.checkTexFile()) res.download(__dirname + '/main.tex');
-    else res.send({"Status": 404, "Response": "No LaTeX-File found"});
+    else res.send({"status": 404, "response": "No LaTeX-File found"});
 });
 
-
 app.get('/api/refetchDonator', (req, res) => { // /refetchUsers?donatorID=1
+    console.log('Refetching User with ID: ' + req.query.donatorID);
     func.refetchUser(year, req.query.donatorID, donationData).then((data) => {
-        res.send(data);
+        donationData = data;
+        res.send({ "year": year, "donationsTotal": donationsTotal, "data": donationData});
     });
-})
-app.get('/api/addNewDonators', (req, res) => { // /refetchUsers?donatorIDs=1-2-3-...
+});
+
+app.get('/api/deleteDonator', (req, res) => { // /deleteDonator?donatorID=1
+    console.log('Deleting User with ID: ' + req.query.donatorID);
+    donationData.splice(req.query.donatorID, 1);
+    res.send({ "year": year, "donationsTotal": donationsTotal, "data": donationData});
+});
+
+app.get('/api/addNewDonators', (req, res) => { // /addNewDonators
+    console.log('Searching for new Users in the year: ' + year);
     func.addNewUsers(year, donationData).then((data) => {
-        res.send(data);
+        donationData = data;
+        res.send({ "year": year, "donationsTotal": donationsTotal, "data": donationData});
     });
 })
 
