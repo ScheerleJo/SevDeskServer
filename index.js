@@ -36,6 +36,11 @@ app.get('/kill', (req, res) => {
     process.exit()
 });
 
+app.get('/getVersion', (req, res) => {
+    console.log('Requesting the current Version...');
+    res.send({"version": VERSION});
+});
+
 app.get('/api/saveToken', (req,res) => { // /saveToken?token=...
     console.log('Trying to save the new API-Token...');
     let response = fileHandler.writeDotEnvToken(req.query.token);
