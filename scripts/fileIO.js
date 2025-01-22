@@ -18,11 +18,11 @@ module.exports = {
  * Save the current status to a file
  * @param {Array<JSON>} arrayData the data to save
  * @param {Number} year the year of the donations
- * @param {Number} donationsTotal the total sum of donations
+ * @param {Number} additionalInfo the total sum of donations
  * @returns {Number} the status code of the operation
  */
-function saveStatusToFile(arrayData, year, donationsTotal) {
-    let json = JSON.stringify({"year": year, "donationsTotal": donationsTotal, "data": arrayData });
+function saveStatusToFile(arrayData, year, additionalInfo) {
+    let json = JSON.stringify({"year": year, "additionalInfo": additionalInfo, "data": arrayData });
     let filePath = path.join(__dirname, "data.json");
     try {
         fs.writeFileSync(filePath, json);

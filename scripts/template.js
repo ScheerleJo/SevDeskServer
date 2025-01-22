@@ -19,6 +19,7 @@ class Template {
             "familyname": "",
             "address": {},
             "totalSum": 0,
+            "formattedSum": "",
             "sumInWords": "",
             "donations": []
         }

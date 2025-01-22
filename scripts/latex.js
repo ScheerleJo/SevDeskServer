@@ -64,7 +64,7 @@ function createLetter(element, year, letter) {
         zip: element.address.zip,
         city: element.address.city,
         country: element.address.country,
-        totalsum: element.totalSum,
+        totalsum: element.formattedSum,
         suminwords: element.sumInWords,
         timeframe: `01.01.${year} \u2012 31.12.${year}`,
         donations: createTexDonations(element.donations)

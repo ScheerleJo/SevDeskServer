@@ -1,6 +1,6 @@
 {
   "application": {
-    "server-version": "beta1.1.0",
+    "server-version": "beta1.1.2",
     "server-port": 8040
   }
 }

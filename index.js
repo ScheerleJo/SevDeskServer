@@ -18,13 +18,12 @@ app.use(require('cors')({
     optionsSuccessStatus: 200,
     methods: "GET, PUT, POST"
 }));
-let donationData, year, donationsTotal;
+let donationData, year;
 let loadedData = fileHandler.loadStatusFromFile();
 
 if (loadedData) {
     donationData = loadedData.data;
     year = loadedData.year;
-    donationsTotal = loadedData.donationsTotal;
 }
 
 app.get('/ping', (req, res) => {
@@ -49,21 +48,23 @@ app.get('/api/fetchNew', (req, res) => { // /fetchNew?year=...
     func.fetchNew(req.query.year).then((data) => {
         year = data.year;
         donationData = data.data;
-        donationsTotal = data.donationsTotal;
         res.send(data);
+    }).catch((error) => {
+        console.log(error)
+        res.send({'error': error.message});  
     });
 })
 
 app.get('/api/saveData', (req, res) => {
     console.log('Trying to save the current status...');
-    let response = fileHandler.saveStatusToFile(donationData, year, donationsTotal);
+    let response = fileHandler.saveStatusToFile(donationData, year, func.getAdditionalInfo(donationData));
     res.send(response); // {"status": 201, "response": "Data Saved Successfully!"}
     console.log(response);
 });
 app.get('/api/loadData', (req, res) => {
     console.log('Trying to load the current status...');
     // let response = fileHandler.loadStatusFromFile();
-    res.send({ "year": year, "donationsTotal": donationsTotal, "data": donationData});
+    res.send({ "year": year, "data": donationData, 'additionalInfo': func.getAdditionalInfo(donationData)});
 });
 
 app.get('/api/loadDataFromFile', (req, res) => {
@@ -74,7 +75,7 @@ app.get('/api/loadDataFromFile', (req, res) => {
 app.get('/api/moveDonator', (req, res) => { // /moveDonator?donatorID=1&status=checked
     console.log('Moving User with ID: ' + req.query.donatorID + ' to status: ' + req.query.status);
     donationData[req.query.donatorID].status = req.query.status;    // unchecked, checked, checkedNotInPool, done, error 
-    res.send({ "year": year, "donationsTotal": donationsTotal, "data": donationData});
+    res.send({ "year": year, "data": donationData, 'additionalInfo': func.getAdditionalInfo(donationData)});
 })
 
 app.get('/api/createLatex', (req, res) => {
@@ -102,21 +103,21 @@ app.get('/api/refetchDonator', (req, res) => { // /refetchUsers?donatorID=1
     console.log('Refetching User with ID: ' + req.query.donatorID);
     func.refetchUser(year, req.query.donatorID, donationData).then((data) => {
         donationData = data;
-        res.send({ "year": year, "donationsTotal": donationsTotal, "data": donationData});
+        res.send({ "year": year, "data": donationData, 'additionalInfo': func.getAdditionalInfo(donationData)});
     });
 });
 
 app.get('/api/deleteDonator', (req, res) => { // /deleteDonator?donatorID=1
     console.log('Deleting User with ID: ' + req.query.donatorID);
-    donationData.splice(req.query.donatorID, 1);
-    res.send({ "year": year, "donationsTotal": donationsTotal, "data": donationData});
+    delete donationData[req.query.donatorID];
+    res.send({ "year": year, "data": donationData, 'additionalInfo': func.getAdditionalInfo(donationData)});
 });
 
 app.get('/api/addNewDonators', (req, res) => { // /addNewDonators
     console.log('Searching for new Users in the year: ' + year);
     func.addNewUsers(year, donationData).then((data) => {
         donationData = data;
-        res.send({ "year": year, "donationsTotal": donationsTotal, "data": donationData});
+        res.send({ "year": year, "data": donationData, 'additionalInfo': func.getAdditionalInfo(donationData)});
     });
 })
 

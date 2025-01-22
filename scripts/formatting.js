@@ -67,7 +67,7 @@ function mergeDonators(data, oldData = undefined) {
     for (const key in users) {
     if(!users[key].sumInWords){
         users[key].sumInWords = convertNumToWord(users[key].totalSum); //Needs to be done before sum is modified to currency string
-        users[key].totalSum = correctSum(users[key].totalSum);
+        users[key].formattedSum = correctSum(users[key].totalSum);
     }
     }
     if(getDonationsTotal(data) !== allDonatorsSum) console.error("Error: Sum of all Donations does not match the sum of all merged Donators!\nThe sum is currently " + allDonatorsSum + " and should be " + getDonationsTotal(data));

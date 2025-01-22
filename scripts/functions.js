@@ -1,7 +1,8 @@
 module.exports = {
     fetchNew,
     refetchUser,
-    addNewUsers
+    addNewUsers,
+    getAdditionalInfo
 }
 
 const requests = require('./requests');
@@ -18,12 +19,10 @@ async function fetchNew(year) {
     formatting.setAddressData(await requests.getAllAddresses());
     console.log('DATA GATHERING (Addresses) COMPLETE')
     let mergedData = await formatting.mergeDonators(data.objects);
-    let actualSum = await formatting.getDonationsTotal(data.objects);
     return {
         "year": year,
-        "donationsTotal": formatting.correctSum(actualSum),
         "data": mergedData,
-        "total": mergedData.length
+        "additionalInfo": getAdditionalInfo(mergedData)
     }
 }
 
@@ -65,4 +64,19 @@ async function refetchUser(year, user, donationData) {
             }
         }
     }
+}
+function getAdditionalInfo(donationData) {
+    let additionalInfo = {
+        totalDonators: Object.keys(donationData).length,
+        totalDonationSum: 0,
+        checkedDonators: 0,
+        checkedDonatorsNIP: 0
+    }; //NIP = Not In Pool
+    for (const key in donationData) {
+        if (donationData[key].status == 'checked') additionalInfo.checkedDonators++;
+        if (donationData[key].status == 'checkedNotInPool') additionalInfo.checkedDonatorsNIP++;
+        additionalInfo.totalDonationSum += parseFloat(donationData[key].totalSum);
+    }
+    additionalInfo.totalDonationSum = formatting.correctSum(additionalInfo.totalDonationSum);
+    return additionalInfo;
 }
