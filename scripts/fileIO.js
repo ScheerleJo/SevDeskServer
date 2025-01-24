@@ -56,15 +56,9 @@ function loadStatusFromFile() {
  * @param {String} data the LaTeX Document as a string
  * @returns {Number} the status code of the operation
  */
-function writeTexDoc(data) {
-    let filePath;
-    let inject = 0;
-    do {
-        filePath = `./main${inject == 0 ? '': inject}.tex`;
-        inject ++;
-    } while(fs.existsSync(filePath));
+function writeTexDoc(data) {;
     try {
-        fs.writeFileSync(filePath, data);
+        fs.writeFileSync('./main.tex', data);
         console.log("LaTeX-FILE SUCCESSFULL CREATED")
         return {"status": 201, "response": "LaTeX-File Created Successfully!"};
     } catch (error) {
