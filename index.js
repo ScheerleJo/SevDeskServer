@@ -53,6 +53,7 @@ app.get('/api/fetchNew', (req, res) => { // /fetchNew?year=...
     func.fetchNew(req.query.year).then((data) => {
         year = data.year;
         donationData = data.data;
+        console.log(data);
         res.send(data);
     }).catch((error) => {
         console.log(error)
