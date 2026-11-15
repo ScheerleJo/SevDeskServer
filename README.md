@@ -10,11 +10,21 @@ Standardmäßig werden innerhalb von einem Gerät Befehlen auf dem Localhost mit
 
 Es gibt einen Server im Hintergrund. Er handhabt die gesamte Datenstruktur und erstellt die Spendenbescheinugungen. Diese werden am Schluss als Lua-LaTeX (.tex) Datei ausgegeben.
 
+Die REST-Schnittstelle unter `/api` ist in der [API.md](./API.md) beschrieben. Jede Änderung wird sofort im Ordner `data/` gespeichert (`state.json` und erzeugte Bescheinigungen unter `certificates/`).
+
+Einstellungen in `config/server_config.json`:
+
+| Schlüssel | Bedeutung |
+| --------- | --------- |
+| `application.server-port` | Port des Servers (überschreibbar mit `PORT`) |
+| `application.data-path` | Ordner für Datenstand und Bescheinigungen (überschreibbar mit `DATA_DIR`) |
+| `application.client-path` | Ordner mit dem gebauten Web-Frontend. Existiert er, liefert der Server das Frontend unter `/` aus (überschreibbar mit `CLIENT_PATH`) |
+| `application.cors-origin` | Optional, nur nötig wenn das Frontend ohne Proxy von einer anderen Adresse kommt (überschreibbar mit `CORS_ORIGIN`) |
+| `sevdesk.accounting-type-id` | Buchungskonto in SevDesk, über das Spenden erkannt werden |
+
 ### Frontend
 
-Zur Benutzerfreundlichen Bedienung gibt es eine Graphische Oberfläche, die auf dem [Tauri-Framework](https://tauri.app/) basiert und alle wichtigen Funktionen bereitstellt.
-
-Mehr zum Frontend [Hier](https://github.com/ScheerleJo/SevDeskClient)
+Die Bedienung erfolgt über ein Web-Dashboard (SevDeskReact), das direkt im Browser läuft. Der frühere Tauri-Client (SevDeskClient) nutzt die alte Schnittstelle und funktioniert mit Version 2 nicht mehr.
 
 ## Installations Prozess
 
@@ -44,7 +54,7 @@ Da der Webserver, welcher im Hintergrund läuft noch ein Work in Progress ist, i
 
 Anschließend zeigt die Konsole Text an, dass der Server auf Port 8040 läuft.
 
-WICHTIG: Diese Konsole darf während der Laufzeit **NICHT** geschlossen werden. Minimieren ist in Ordnung. Wenn sie geschlossen wird ohne über die Benutzeroberfläche zu speichern, ist der Fortschritt verloren und es muss von vorne begonnen werden.
+WICHTIG: Solange das Tool genutzt wird, muss diese Konsole geöffnet bleiben. Der Fortschritt wird automatisch gespeichert und ist nach einem Neustart wieder da.
 
 ### Benutzeroberfläche installieren
 
@@ -101,7 +111,7 @@ Aktuell werden dabei alle Elemente überschrieben egal, was für einen Status si
 
 ## Latex
 
-Für die Latex-Dokument-Generierung wird eine Vorlage benötigt. Der Pfad zu dieser Datei muss in der `latex_config.json` im Attribut "templatePath" angegeben werden.
+Für die Latex-Dokument-Generierung wird eine Vorlage benötigt. Der Pfad zu dieser Datei muss in der `latex_config.json` im Attribut "templatePath" angegeben werden. Über `PUT /api/template` kann sie ersetzt werden, die alte Version wird dann in `LaTeX-Templates/backup/` gesichert. Spenderdaten werden LaTeX-sicher eingesetzt, Sonderzeichen wie `&` werden also automatisch maskiert.
 Im Aktuellen Stand des Tools werden feste Bindings verwendet um in der Vorlage die Platzhalter bei der Erstellung zu ersetzen. Für spätere Versionen ist geplant, diese über die graphische Oberfläche dynamisch erstellen und verwalten zu können.
 
 Das Schema für die einzelnen Spenden ist ebenfalls in der `latex_config.json` anpassbar. Die Platzhalter werden durch die Begrenzungszeichen `<<` und `>>` beschränkt.
