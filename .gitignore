@@ -3,3 +3,8 @@
 .env
 /SevDeskGui
 *data.json
+/*.tex
+/data
+/main*.tex
+config/*.tmp
+LaTeX-Templates/backup

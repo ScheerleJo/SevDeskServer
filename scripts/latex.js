@@ -1,117 +1,70 @@
-DocumentType = module;
-const fileHandler = require('./fileIO');
 const mustache = require('mustache');
-const config = new (require('./configuration'))();
-// const latex = require('node-latex'); Disabled for now, theoretically it should work
+const { formatEuro, formatDate, escapeLatex } = require('./format');
 
-module.exports = { createTexDocument };
+// << >> instead of {{ }} because braces are part of LaTeX; values are inserted unescaped.
+mustache.tags = ['<<', '>>'];
+mustache.escape = (text) => text;
 
-//Change the delimiter for Mustache to << >> instead of {{ }} because of latex reserved characters
-mustache.tags = [ '<<', '>>' ];
-mustache.escape = text => text;
+const LETTER_START = '<<LETTERSTART>>';
+const LETTER_END = '<<LETTEREND>>';
 
-
-/**
- * create the latex document from the data and template
- * @param {Map<Number,JSON>} data the data of the selected donators
- * @param {any} year the year of the donations
- * @returns {String} the latex document as a string
- */
-function createTexDocument(data, year) {
-    const template = fileHandler.getTexTemplate();
-    const header = template.split('<<LETTERSTART>>')[0];
-
-    const headerData = {
-        fromstreet: config.get("company:address:street"),
-        fromzipcode: config.get("company:address:zip"),
-        fromcity: config.get("company:address:city"),
-        fromiban: config.get("company:bank:iban"),
-        frombankname: config.get("company:bank:name"),
-        frombic: config.get("company:bank:bic"),
-        fromname: config.get("company:name"),
-        fromemail: config.get("company:email"),
-        fromphone: config.get("company:phone"),
-        fromurl: config.get("company:url"),
-        date: new Date().toLocaleDateString(), 
-    };
-    
-    let input = mustache.render(header, headerData);
-
-    for(const key in data){
-        const letter = template.split('<<LETTERSTART>>')[1].split('<<LETTEREND>>')[0];
-        input += createLetter(checkDonatorElement(data[key]), year, letter);
-    }
-    input += template.split('<<LETTEREND>>')[1];
-    return input;
-
-    // latex(input).pipe(fs.createWriteStream('hello-tex.pdf'));
+/** Whether a template has the markers needed to split it into header/letter/footer. */
+function isValidTemplate(template) {
+    const start = template.indexOf(LETTER_START);
+    const end = template.indexOf(LETTER_END);
+    return start !== -1 && end > start;
 }
 
-
 /**
- * Fill the template with the data of the donator
- * @param {JSON} element the single donator to create the letter for
- * @param {Number} year Year of the donations
- * @param {String} letter Template for the letter
- * @returns {String} the latex-letter as a string
+ * Create the LaTeX document for the given donators.
+ * @param {Array<Object>} donators
+ * @param {Number} year
+ * @param {{company: Object, donationScheme: String}} latexConfig
+ * @param {String} template content of the LaTeX template
+ * @returns {String}
  */
-function createLetter(element, year, letter) {
-    let surename = element.academicTitle ? element.academicTitle + ' ' + element.surename : element.surename;
+function createTexDocument(donators, year, latexConfig, template) {
+    const [header, rest] = template.split(LETTER_START);
+    const [letter, footer] = rest.split(LETTER_END);
+    const { company } = latexConfig;
+
+    let output = mustache.render(header, {
+        fromstreet: company.address.street,
+        fromzipcode: company.address.zip,
+        fromcity: company.address.city,
+        fromiban: company.bank.iban,
+        frombankname: company.bank.name,
+        frombic: company.bank.bic,
+        fromname: company.name,
+        fromemail: company.email,
+        fromphone: company.phone,
+        fromurl: company.url,
+        date: new Date().toLocaleDateString('de-DE'),
+    });
+    for (const donator of donators) output += createLetter(donator, year, letter, latexConfig.donationScheme);
+    output += footer;
+    return output;
+}
+
+function createLetter(donator, year, letter, donationScheme) {
+    const surename = [donator.academicTitle, donator.surename].filter(Boolean).join(' ');
     return mustache.render(letter, {
-        surename: surename,
-        familyname: element.familyname,
-        street: element.address.street,
-        zip: element.address.zip,
-        city: element.address.city,
-        country: element.address.country,
-        totalsum: element.formattedSum,
-        suminwords: element.sumInWords,
-        timeframe: `01.01.${year} \u2012 31.12.${year}`,
-        donations: createTexDonations(element.donations)
+        surename: escapeLatex(surename),
+        familyname: escapeLatex(donator.familyname),
+        street: escapeLatex(donator.address.street),
+        zip: escapeLatex(donator.address.zip),
+        city: escapeLatex(donator.address.city),
+        country: escapeLatex(donator.address.country),
+        totalsum: escapeLatex(formatEuro(donator.totalSum)),
+        suminwords: escapeLatex(donator.sumInWords),
+        timeframe: `01.01.${year} ‒ 31.12.${year}`,
+        donations: donator.donations.map((donation) => mustache.render(donationScheme, {
+            donationdate: formatDate(donation.date),
+            donationtype: escapeLatex(donation.type),
+            donationtax: donation.waived ? 'ja' : 'nein',
+            donationsum: escapeLatex(formatEuro(donation.sum)),
+        })).join(''),
     });
 }
 
-/**
- * Create the donation entries for the letter
- * @param {Array<JSON>} donations the donations of the donator
- * @returns {String} the donation entries as a string
- */
-function createTexDonations(donations){
-    let donationString = '';
-    const donationTemplate = config.get('donationScheme');
-    for(let i = 0; i < donations.length; i++){
-        donationString += mustache.render(donationTemplate, {
-            donationdate: donations[i].date,
-            donationtype: donations[i].type,
-            donationtax: donations[i].waive,
-            donationsum: donations[i].sum
-        });
-    }
-    return donationString;
-}
-
-/**
- * Check if the element is not null or undefined
- * @param {any} element the element to check
- * @returns {any} the element or an empty string
- */
-function checkValue(element) {
-    if(element) return element;
-    return '';
-}
-
-/**
- * Check if the element is not null or undefined
- * @param {JSON} element the element to check
- * @returns {JSON} the element with checked values
- */
-function checkDonatorElement(element) {
-    element.academicTitle = checkValue(element.academicTitle);
-    element.surename = checkValue(element.surename);
-    element.familyname = checkValue(element.familyname);
-    element.address.ctreet = checkValue(element.address.street);
-    element.address.zip = checkValue(element.address.zip);
-    element.address.city = checkValue(element.address.city);
-    element.address.country = checkValue(element.address.country);
-    return element;
-}
+module.exports = { createTexDocument, isValidTemplate };

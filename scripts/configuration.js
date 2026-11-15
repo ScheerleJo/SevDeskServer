@@ -1,65 +1,56 @@
-class ConfigHandling {
+const fs = require('fs');
+const path = require('path');
 
-    constructor() {
-        this.nconf = new (require('nconf')).Provider();
-        this.path = require('path');
-        this.fs = require('fs');
+const ROOT = path.join(__dirname, '..');
+const SERVER_CONFIG = path.join(ROOT, 'config', 'server_config.json');
+const LATEX_CONFIG = path.join(ROOT, 'config', 'latex_config.json');
 
-        this.nconf.argv().env()
-
-        this.nconf.file('server', this.path.join(process.cwd(), 'config' , 'server_config.json'))
-        this.nconf.file('latex', this.path.join(process.cwd(), 'config', 'latex_config.json'));
-    }
-
-    /**
-     * Set a value in the config file
-     * @param {String} key 
-     * @param {*} value 
-     * @param {String} store 
-     */
-    set(key, value, store) {
-        this.nconf.set(key, value, { store: store });
-        this.nconf.save();
-    }
-
-    /**
-     * Get a value from the config file
-     * @param {String} key
-     * @returns {*} the value  
-    */
-    get(key) {
-        return this.nconf.get(key);
-    }
-
-    /**
-     * Save the the filePath to store the current active data
-     * @param {String} path full Path to the file
-     */
-    setSaveDataPath(path) {
-        this.set('save-filePath', path);
-    }
-    /**
-     * Get the filePath to the file to store the current active data
-     * @returns {String} the full Path to the file
-     */
-    getSaveDataPath() {
-        return this.get('save-filePath');
-    }
-    
-    /**
-     * Get the Port the server is running on
-     * @returns {Number} the Port
-     */
-    getPort() { 
-        return this.get('application:server-port'); 
-    }
-
-    /**
-     * Get the Version of the Tool
-     * @returns {String} the Version
-     */
-    getVersion() {
-        return this.get('application:server-version');
-    }
+function readJson(file) {
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
-module.exports = ConfigHandling;
+
+/**
+ * Write JSON via a temporary file so a crash never leaves a half-written file behind.
+ */
+function writeJson(file, data) {
+    const tmp = file + '.tmp';
+    fs.writeFileSync(tmp, JSON.stringify(data, null, 2) + '\n');
+    fs.renameSync(tmp, file);
+}
+
+const serverConfig = readJson(SERVER_CONFIG);
+const app = serverConfig.application || {};
+const resolveOptional = (value) => (value ? path.resolve(ROOT, value) : null);
+
+module.exports = {
+    ROOT,
+    readJson,
+    writeJson,
+
+    version: app['server-version'],
+    port: Number(process.env.PORT) || app['server-port'],
+    /** Folder with the built web frontend; served by this server if it exists. */
+    clientPath: resolveOptional(process.env.CLIENT_PATH || app['client-path']),
+    /** Only needed if the frontend runs on another origin without a proxy. */
+    corsOrigin: process.env.CORS_ORIGIN || app['cors-origin'] || null,
+    /** Folder for the saved state and generated certificates. */
+    dataDir: path.resolve(ROOT, process.env.DATA_DIR || app['data-path'] || 'data'),
+    /** SevDesk accounting type ("Buchungskonto") that marks a voucher as donation. */
+    accountingTypeId: (serverConfig.sevdesk || {})['accounting-type-id'],
+
+    /** Company data and donation scheme (without the internal templatePath). */
+    getLatexConfig() {
+        const { company, donationScheme } = readJson(LATEX_CONFIG);
+        return { company, donationScheme };
+    },
+
+    saveLatexConfig({ company, donationScheme }) {
+        const current = readJson(LATEX_CONFIG);
+        writeJson(LATEX_CONFIG, { company, donationScheme, templatePath: current.templatePath });
+        return { company, donationScheme };
+    },
+
+    getTemplatePath() {
+        return path.resolve(ROOT, readJson(LATEX_CONFIG).templatePath);
+    },
+};
